@@ -37,6 +37,25 @@ app.get('/', (req, res) => {
   res.json({ status: 'ok', message: 'Vida Apertada API Proxy' });
 });
 
+// Listar modelos disponíveis na conta
+app.get('/models', async (req, res) => {
+  if (!ANTHROPIC_API_KEY) {
+    return res.status(500).json({ error: 'ANTHROPIC_API_KEY não configurada' });
+  }
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/models', {
+      headers: {
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01'
+      }
+    });
+    const data = await response.json();
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Proxy endpoint
 app.post('/api/claude', async (req, res) => {
   if (!ANTHROPIC_API_KEY) {
