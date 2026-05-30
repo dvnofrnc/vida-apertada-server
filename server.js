@@ -6,12 +6,29 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
-// Allow requests from your GitHub Pages domain
-app.use(cors({
-  origin: '*', // ou coloque sua URL do GitHub Pages aqui para mais segurança
-  methods: ['POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type']
-}));
+const allowedOrigins = [
+  'https://dvnofrnc.github.io',
+  'http://localhost',
+  'http://127.0.0.1',
+  'null' // file:// protocol
+];
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  // Allow any origin that matches our list, or allow all if origin is undefined
+  if (!origin || allowedOrigins.includes(origin) || origin.startsWith('https://dvnofrnc.github.io')) {
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Max-Age', '86400');
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
+  next();
+});
 
 app.use(express.json({ limit: '20mb' }));
 
@@ -20,7 +37,7 @@ app.get('/', (req, res) => {
   res.json({ status: 'ok', message: 'Vida Apertada API Proxy' });
 });
 
-// Proxy endpoint para a API da Anthropic
+// Proxy endpoint
 app.post('/api/claude', async (req, res) => {
   if (!ANTHROPIC_API_KEY) {
     return res.status(500).json({ error: 'ANTHROPIC_API_KEY não configurada no servidor' });
