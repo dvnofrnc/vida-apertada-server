@@ -40,9 +40,25 @@ endereço do painel e a chave.
 Rodar o mesmo comando depois de um commit novo atualiza a instalação sem perder
 dados.
 
-Para publicar sob um domínio com HTTPS, ponha o Nginx na frente —
-`deploy/nginx.conf.exemplo` traz a configuração pronta, inclusive o limite de
-upload que os prints exigem e como restringir o acesso à rede do órgão.
+### Sob um domínio, com HTTPS
+
+Com o registro A do DNS já apontando para o servidor:
+
+```bash
+sudo bash /opt/sentinela/deploy/publicar-dominio.sh SEU-DOMINIO seu@email dip
+```
+
+O script confere o DNS, instala Nginx e certbot, publica o painel no domínio,
+emite o certificado HTTPS com renovação automática, libera as portas no firewall
+e — por causa do terceiro argumento — cria um **login de navegador** que protege
+o painel inteiro, inclusive a leitura.
+
+Esse terceiro argumento é opcional, mas importante: a `SENTINELA_CHAVE` protege
+só a gravação. Sem o login, quem descobrir o endereço lê toda a base. Para dado
+de investigação exposto na internet, use os dois.
+
+`deploy/nginx.conf.exemplo` traz a mesma configuração para quem preferir
+escrever à mão, e mostra como restringir o acesso por faixa de IP.
 
 Comandos do dia a dia:
 
