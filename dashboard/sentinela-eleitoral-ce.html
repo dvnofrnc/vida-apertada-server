@@ -94,6 +94,7 @@
 }
 
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%}
 body{
   margin:0;
@@ -157,6 +158,10 @@ button,input,select,textarea{font:inherit;color:inherit}
 .btn-ghost{background:transparent;border-color:transparent;color:var(--ink-2);padding:5px 8px}
 .btn-ghost:hover{background:var(--surface-3);color:var(--ink)}
 .btn[disabled]{opacity:.45;cursor:not-allowed}
+.ponto{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
+.ponto.on{background:var(--st-good)}
+.ponto.off{background:var(--st-crit)}
+.ponto.sync{background:var(--st-warn)}
 
 /* ── Estrutura ──────────────────────────────────────────────── */
 main{max-width:1680px;margin:0 auto;padding:18px 22px 60px;display:flex;flex-direction:column;gap:16px}
@@ -180,6 +185,7 @@ main{max-width:1680px;margin:0 auto;padding:18px 22px 60px;display:flex;flex-dir
 }
 .notice strong{color:var(--ink)}
 .notice .spacer{flex:1}
+.notice[hidden]{display:none}
 
 /* ── Filtros ────────────────────────────────────────────────── */
 .filters{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;padding:13px 15px}
@@ -316,12 +322,77 @@ tr.n-critico td:first-child{border-left-color:var(--st-crit)}
 .checks label{
   display:inline-flex;align-items:center;gap:6px;cursor:pointer;
   border:1px solid var(--border-strong);border-radius:999px;padding:4px 11px;
-  font-size:var(--fs-sm);background:var(--surface-2);
+  background:var(--surface-2);white-space:nowrap;
+  font-size:var(--fs-sm);font-weight:500;color:var(--ink);
+  text-transform:none;letter-spacing:0;
 }
 .checks label:hover{border-color:var(--accent)}
 .checks input{accent-color:var(--accent);margin:0}
 .checks label:has(input:checked){background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
 .erro{color:var(--st-crit);font-size:var(--fs-sm);font-weight:600}
+
+/* ── Prints ─────────────────────────────────────────────────────────── */
+.dropzone{
+  border:1.5px dashed var(--border-strong);border-radius:var(--r);
+  padding:14px;text-align:center;font-size:var(--fs-sm);color:var(--ink-2);
+  background:var(--surface-2);cursor:pointer;transition:border-color .12s ease,background .12s ease;
+}
+.dropzone:hover,.dropzone:focus-visible{border-color:var(--accent);background:var(--accent-soft)}
+.dropzone.sobre{border-color:var(--accent);background:var(--accent-soft);border-style:solid}
+.dropzone small{display:block;margin-top:5px;color:var(--muted);font-size:var(--fs-xs)}
+.dropzone .btn{padding:3px 9px}
+.anexos{display:flex;flex-wrap:wrap;gap:9px;margin-top:10px}
+.anexo{
+  position:relative;width:104px;border:1px solid var(--border);border-radius:var(--r);
+  overflow:hidden;background:var(--surface-2);
+}
+.anexo .mini{display:block;width:100%;height:74px;object-fit:cover;background:var(--surface-3)}
+.anexo .doc{display:grid;place-items:center;height:74px;font-size:22px;color:var(--muted)}
+.anexo .nome{display:block;padding:4px 6px;font-size:10px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.anexo .tirar{
+  position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;
+  border:0;background:rgba(10,14,19,.72);color:#fff;font-size:12px;line-height:1;cursor:pointer;
+}
+.anexo .tirar:hover{background:var(--st-crit)}
+.anexo.enviando{opacity:.55}
+.selo-prints{
+  display:inline-flex;align-items:center;gap:5px;border:1px solid var(--border-strong);
+  background:var(--surface-2);border-radius:999px;padding:1px 9px;font-size:var(--fs-xs);
+  font-weight:600;color:var(--ink);cursor:pointer;
+}
+.selo-prints:hover{border-color:var(--accent);color:var(--accent)}
+
+.visor{
+  position:fixed;inset:0;z-index:100;background:#070a0e;
+  display:none;flex-direction:column;
+}
+.visor.on{display:flex}
+.visor-topo{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.13);color:#f2f5f9}
+.visor-info{display:flex;flex-direction:column;min-width:0}
+.visor-info b{font-size:var(--fs-md);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.visor-info span{font-family:"IBM Plex Mono",monospace;font-size:var(--fs-xs);color:#9fb0c2;word-break:break-all}
+.visor-contador{color:#9fb0c2;font-size:var(--fs-sm)}
+.visor-topo .btn{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.2);color:#f2f5f9;text-decoration:none}
+.visor-topo .btn:hover{background:rgba(255,255,255,.17)}
+.visor-palco{flex:1;display:flex;align-items:center;gap:8px;padding:14px;min-height:0}
+.visor-quadro{flex:1;height:100%;display:grid;place-items:center;overflow:auto}
+.visor-quadro img{max-width:100%;max-height:100%;object-fit:contain;border-radius:3px;background:#fff}
+.visor-quadro iframe{width:100%;height:100%;border:0;border-radius:3px;background:#fff}
+.visor-quadro .aviso-visor{color:#9fb0c2;font-size:var(--fs-sm)}
+.visor-nav{
+  flex:none;width:44px;height:74px;border-radius:var(--r);border:1px solid rgba(255,255,255,.2);
+  background:rgba(255,255,255,.08);color:#f2f5f9;font-size:26px;cursor:pointer;
+}
+.visor-nav:hover{background:rgba(255,255,255,.18)}
+.visor-nav[disabled]{opacity:.25;cursor:default}
+.visor-tiras{display:flex;gap:7px;padding:10px 16px 16px;overflow-x:auto}
+.visor-tiras button{
+  flex:none;width:74px;height:52px;border-radius:4px;border:2px solid transparent;
+  overflow:hidden;background:rgba(255,255,255,.08);cursor:pointer;padding:0;
+}
+.visor-tiras button.sel{border-color:var(--accent)}
+.visor-tiras img{width:100%;height:100%;object-fit:cover;display:block}
+.visor-tiras .doc{display:grid;place-items:center;height:100%;color:#9fb0c2;font-size:19px}
 
 /* ── Tooltip ────────────────────────────────────────────────── */
 #tip{
@@ -373,12 +444,23 @@ tr.n-critico td:first-child{border-left-color:var(--st-crit)}
     <b id="relogio">—</b>
     <span id="dataHoje">—</span>
   </div>
+  <button class="btn" id="btnBase" title="Origem dos dados"><span class="ponto" id="pontoBase"></span><span id="rotuloBase">Base local</span></button>
   <button class="btn" id="btnTema" title="Alternar tema claro/escuro">◐ Tema</button>
   <button class="btn" id="btnImprimir">⎙ Relatório</button>
   <button class="btn btn-primary" id="btnNovo">+ Novo registro</button>
 </header>
 
 <main>
+
+  <div class="notice" id="avisoAberta" hidden>
+    <span>⚠</span>
+    <div>
+      <strong>Base compartilhada sem chave de acesso.</strong>
+      Qualquer pessoa com o endereço do painel pode ler, incluir, alterar e excluir registros.
+      Para restringir, defina a variável <b>SENTINELA_CHAVE</b> no servidor e distribua a chave
+      só à equipe autorizada.
+    </div>
+  </div>
 
   <div class="notice" id="avisoDemo">
     <span>⚠</span>
@@ -589,6 +671,16 @@ tr.n-critico td:first-child{border-left-color:var(--st-crit)}
         <label for="cObs">Observações do analista</label>
         <textarea id="cObs" placeholder="Contexto, vínculos, encaminhamentos"></textarea>
       </div>
+      <div class="field full">
+        <label>Prints da postagem</label>
+        <div class="dropzone" id="zonaPrints" tabindex="0">
+          <input type="file" id="arquivoPrints" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf" multiple hidden>
+          Arraste os prints aqui, cole com <b>Ctrl+V</b> ou
+          <button type="button" class="btn" id="btnEscolherPrints">escolher arquivos</button>
+          <small>PNG, JPEG, WebP, GIF ou PDF · até 12 MB cada · máximo 12 por registro</small>
+        </div>
+        <div class="anexos" id="anexos"></div>
+      </div>
       <p class="erro full" id="erroForm" hidden></p>
     </div>
     <footer>
@@ -598,6 +690,57 @@ tr.n-critico td:first-child{border-left-color:var(--st-crit)}
       <button type="submit" class="btn btn-primary">Salvar registro</button>
     </footer>
   </form>
+</div>
+
+<div class="backdrop" id="modalBase">
+  <form class="modal" id="formBase" style="width:min(560px,100%)">
+    <header>
+      <h2>Origem dos dados</h2>
+      <div style="flex:1"></div>
+      <button type="button" class="btn btn-ghost" id="btnFecharBase" aria-label="Fechar">✕</button>
+    </header>
+    <div class="corpo" style="grid-template-columns:1fr">
+      <p style="margin:0;font-size:var(--fs-sm);color:var(--ink-2);line-height:1.55">
+        Na <b>base compartilhada</b>, todos os registros ficam no servidor do Departamento e
+        todo mundo com o link enxerga e alimenta a mesma base. Na <b>base local</b>, os dados
+        ficam apenas neste navegador.
+      </p>
+      <div class="field">
+        <label for="cServidor">Endereço do servidor</label>
+        <input id="cServidor" type="url" placeholder="https://seu-servidor (vazio = mesmo endereço desta página)" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="cChave">Chave de acesso <span style="text-transform:none;letter-spacing:0">(só se o servidor exigir)</span></label>
+        <input id="cChave" type="password" placeholder="deixe vazio se a base for aberta" autocomplete="off">
+      </div>
+      <p id="statusBase" style="margin:0;font-size:var(--fs-sm);color:var(--ink-2)"></p>
+    </div>
+    <footer>
+      <button type="button" class="btn" id="btnUsarLocal">Usar base local</button>
+      <div style="flex:1"></div>
+      <button type="button" class="btn" id="btnCancelarBase">Cancelar</button>
+      <button type="submit" class="btn btn-primary">Conectar</button>
+    </footer>
+  </form>
+</div>
+
+<div class="visor" id="visor" role="dialog" aria-label="Prints da postagem">
+  <div class="visor-topo">
+    <div class="visor-info">
+      <b id="visorNome">—</b>
+      <span id="visorMeta"></span>
+    </div>
+    <div style="flex:1"></div>
+    <span class="visor-contador num" id="visorContador"></span>
+    <a class="btn" id="visorAbrir" target="_blank" rel="noopener noreferrer">Abrir em nova aba ↗</a>
+    <button type="button" class="btn" id="visorFechar" aria-label="Fechar">✕</button>
+  </div>
+  <div class="visor-palco">
+    <button type="button" class="visor-nav" id="visorAnterior" aria-label="Print anterior">‹</button>
+    <div class="visor-quadro" id="visorQuadro"></div>
+    <button type="button" class="visor-nav" id="visorProximo" aria-label="Próximo print">›</button>
+  </div>
+  <div class="visor-tiras" id="visorTiras"></div>
 </div>
 
 <div id="tip"></div>
@@ -761,12 +904,88 @@ function baseDemo(){
 let registros = [];
 let ordem = { col:"data", dir:-1 };
 let editandoId = null;
+let anexos = [];                 // prints do registro aberto no formulário
 const filtros = { busca:"", regiao:"", cidade:"", nivel:"", difusao:"", resultado:"", periodo:"" };
+
+/* Origem dos dados: "compartilhado" = base única no servidor do Departamento;
+   "local" = apenas o armazenamento deste navegador. */
+let modo = "local";
+let servidor = "";               // vazio = mesma origem da página
+let chaveAcesso = "";
+let protegido = false;
+let atualizadoEm = null;
 
 const $  = (s,r=document)=>r.querySelector(s);
 const $$ = (s,r=document)=>Array.from(r.querySelectorAll(s));
 
-function carregar(){
+function guardarConexao(){
+  try{
+    localStorage.setItem(CHAVE+"_modo", modo);
+    localStorage.setItem(CHAVE+"_servidor", servidor);
+    localStorage.setItem(CHAVE+"_chave", chaveAcesso);
+  }catch(e){}
+}
+function lerConexao(){
+  try{
+    servidor    = localStorage.getItem(CHAVE+"_servidor") || "";
+    chaveAcesso = localStorage.getItem(CHAVE+"_chave") || "";
+    return localStorage.getItem(CHAVE+"_modo") || "";
+  }catch(e){ return ""; }
+}
+
+async function api(metodo, caminho, corpo){
+  const opcoes = { method:metodo, headers:{} };
+  if(corpo !== undefined){
+    opcoes.headers["Content-Type"] = "application/json";
+    opcoes.body = JSON.stringify(corpo);
+  }
+  if(chaveAcesso) opcoes.headers["x-sentinela-chave"] = chaveAcesso;
+  const resp = await fetch((servidor||"") + caminho, opcoes);
+  let dados = null;
+  try{ dados = await resp.json(); }catch(e){}
+  if(!resp.ok) throw new Error((dados && dados.error) || ("o servidor respondeu " + resp.status));
+  return dados;
+}
+function absorver(resposta){
+  registros = resposta.registros || [];
+  atualizadoEm = resposta.atualizadoEm || null;
+  protegido = !!resposta.protegido;
+}
+async function conectar(){
+  const resposta = await api("GET","/api/registros");
+  absorver(resposta);
+  modo = "compartilhado";
+  guardarConexao();
+  return resposta;
+}
+async function sincronizar(){
+  if(modo !== "compartilhado" || document.hidden) return;
+  try{
+    const resposta = await api("GET","/api/registros");
+    const mudou = resposta.atualizadoEm !== atualizadoEm ||
+                  (resposta.registros||[]).length !== registros.length;
+    absorver(resposta);
+    marcarBase("on");
+    if(mudou) render();
+  }catch(e){ marcarBase("off"); }
+}
+function marcarBase(estado){
+  const ponto = $("#pontoBase"), rotulo = $("#rotuloBase");
+  if(!ponto) return;
+  ponto.className = "ponto " + estado;
+  if(modo === "compartilhado"){
+    rotulo.textContent = estado === "off" ? "Base compartilhada (sem conexão)" : "Base compartilhada";
+    $("#btnBase").title = "Base única em " + (servidor || "este servidor") +
+      (atualizadoEm ? " · atualizada em " + new Date(atualizadoEm).toLocaleString("pt-BR") : "");
+  }else{
+    rotulo.textContent = "Base local";
+    $("#btnBase").title = "Os dados ficam apenas neste navegador. Clique para conectar à base compartilhada.";
+  }
+  $("#avisoAberta").hidden = !(modo === "compartilhado" && !protegido);
+}
+
+/* Armazenamento local — usado apenas fora da base compartilhada */
+function carregarLocal(){
   try{
     const bruto = localStorage.getItem(CHAVE);
     if(bruto){
@@ -778,10 +997,11 @@ function carregar(){
   registros = baseDemo();
 }
 function salvar(){
+  if(modo === "compartilhado") return;
   try{ localStorage.setItem(CHAVE, JSON.stringify({versao:1, registros})); }
-  catch(e){ aviso("Não foi possível gravar neste navegador. Exporte um backup JSON."); }
+  catch(e){ aviso("A base local encheu — provavelmente por causa dos prints. Conecte-se à base compartilhada ou exporte um backup JSON."); }
 }
-function temDemo(){ return registros.some(r=>r.demo); }
+function temDemo(){ return modo !== "compartilhado" && registros.some(r=>r.demo); }
 function novoId(){
   let n = 1;
   const usados = new Set(registros.map(r=>r.id));
@@ -1020,6 +1240,9 @@ function renderTabela(lista){
             ${r.tipo?`<span>· ${esc(r.tipo)}</span>`:""}
             ${Number(r.alcance)>0?`<span>· alcance ${numero(r.alcance)}</span>`:""}
             ${r.url?`<a href="${esc(r.url)}" target="_blank" rel="noopener noreferrer">abrir link ↗</a>`:""}
+            ${(r.prints||[]).length
+              ? `<button type="button" class="selo-prints" data-prints="${esc(r.id)}">🖼 ${(r.prints||[]).length} print(s)</button>`
+              : ""}
           </div>
         </td>
         <td>${esc(r.cidade)}</td>
@@ -1033,6 +1256,7 @@ function renderTabela(lista){
         </div></td>
       </tr>`).join("");
     $$("[data-editar]",corpo).forEach(b=>b.addEventListener("click",()=>abrirModal(b.dataset.editar)));
+    $$("[data-prints]",corpo).forEach(b=>b.addEventListener("click",()=>abrirVisor(b.dataset.prints,0)));
   }
   $$("#tabela thead th.ord").forEach(th=>{
     const ativo = th.dataset.col===ordem.col;
@@ -1054,6 +1278,131 @@ function render(){
   renderTabela(lista);
   $("#avisoDemo").hidden = !temDemo();
   atualizarSelectCidades();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   9b. PRINTS — anexo e visualização
+   ═══════════════════════════════════════════════════════════════ */
+const TIPOS_PRINT = ["image/png","image/jpeg","image/webp","image/gif","application/pdf"];
+const MAX_PRINT = 12 * 1024 * 1024;
+const MAX_PRINTS = 12;
+
+function tamanhoLegivel(b){
+  const n = Number(b)||0;
+  if(n < 1024) return n + " B";
+  if(n < 1048576) return (n/1024).toFixed(0) + " KB";
+  return (n/1048576).toFixed(1) + " MB";
+}
+function urlPrint(p){
+  return p.dados ? p.dados : (servidor||"") + "/api/prints/" + encodeURIComponent(p.id);
+}
+function ehImagem(p){ return p.tipo !== "application/pdf"; }
+
+async function hashArquivo(buffer){
+  try{
+    if(!crypto || !crypto.subtle) return "";
+    const bits = await crypto.subtle.digest("SHA-256", buffer);
+    return Array.from(new Uint8Array(bits)).map(b=>b.toString(16).padStart(2,"0")).join("");
+  }catch(e){ return ""; }
+}
+const paraBase64 = buffer => {
+  const bytes = new Uint8Array(buffer);
+  let bin = "";
+  for(let i=0;i<bytes.length;i+=0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i,i+0x8000));
+  return btoa(bin);
+};
+
+async function anexarArquivos(lista){
+  const arquivos = Array.from(lista||[]);
+  for(const arq of arquivos){
+    if(anexos.length >= MAX_PRINTS){ aviso(`Máximo de ${MAX_PRINTS} prints por registro.`); break; }
+    if(!TIPOS_PRINT.includes(arq.type)){ aviso(`"${arq.name}" não é PNG, JPEG, WebP, GIF ou PDF.`); continue; }
+    if(arq.size > MAX_PRINT){ aviso(`"${arq.name}" passa de 12 MB.`); continue; }
+    const provisorio = { id:"tmp-"+Math.random().toString(36).slice(2), nome:arq.name || "print",
+                         tipo:arq.type, tamanho:arq.size, sha256:"", enviando:true, dados:URL.createObjectURL(arq) };
+    anexos.push(provisorio);
+    renderAnexos();
+    try{
+      const buffer = await arq.arrayBuffer();
+      const sha256 = await hashArquivo(buffer);
+      if(modo === "compartilhado"){
+        const r = await api("POST","/api/prints",
+          { nome:provisorio.nome, tipo:arq.type, sha256, dados:paraBase64(buffer) });
+        Object.assign(provisorio, r.print, {enviando:false, dados:null});
+      }else{
+        provisorio.dados = "data:"+arq.type+";base64,"+paraBase64(buffer);
+        provisorio.sha256 = sha256;
+        provisorio.enviando = false;
+      }
+    }catch(e){
+      anexos = anexos.filter(x=>x!==provisorio);
+      aviso("Falha ao anexar o print: " + e.message);
+    }
+    renderAnexos();
+  }
+}
+/* Prints capturados na base local precisam subir ao servidor antes de o
+   registro ser gravado na base compartilhada. */
+async function subirAnexosPendentes(){
+  for(const p of anexos){
+    if(!p.dados || !String(p.dados).startsWith("data:")) continue;
+    const base64 = String(p.dados).split(",")[1] || "";
+    const r = await api("POST","/api/prints",
+      { nome:p.nome, tipo:p.tipo, sha256:p.sha256, dados:base64 });
+    Object.assign(p, r.print, {dados:null});
+  }
+}
+function renderAnexos(){
+  const el = $("#anexos");
+  el.innerHTML = anexos.map((p,i)=>`
+    <div class="anexo${p.enviando?" enviando":""}">
+      ${ehImagem(p) ? `<img class="mini" src="${esc(urlPrint(p))}" alt="${esc(p.nome)}">`
+                    : `<div class="doc">PDF</div>`}
+      <span class="nome" title="${esc(p.nome)}">${esc(p.nome)}</span>
+      <button type="button" class="tirar" data-tirar="${i}" aria-label="Remover">✕</button>
+    </div>`).join("");
+  $$("[data-tirar]", el).forEach(b=>b.addEventListener("click", ()=>{
+    anexos.splice(Number(b.dataset.tirar),1);
+    renderAnexos();
+  }));
+}
+
+/* Visualizador em tela cheia */
+let visorLista = [], visorPos = 0;
+function abrirVisor(registroId, pos){
+  const r = registros.find(x=>x.id===registroId);
+  visorLista = (r && r.prints) || [];
+  if(!visorLista.length) return;
+  visorPos = Math.min(Math.max(Number(pos)||0, 0), visorLista.length-1);
+  $("#visor").classList.add("on");
+  pintarVisor();
+}
+function fecharVisor(){ $("#visor").classList.remove("on"); $("#visorQuadro").innerHTML = ""; }
+function pintarVisor(){
+  const p = visorLista[visorPos];
+  if(!p) return;
+  const url = urlPrint(p);
+  $("#visorQuadro").innerHTML = ehImagem(p)
+    ? `<img src="${esc(url)}" alt="${esc(p.nome)}">`
+    : `<iframe src="${esc(url)}" title="${esc(p.nome)}"></iframe>`;
+  $("#visorNome").textContent = p.nome || "print";
+  $("#visorMeta").textContent = tamanhoLegivel(p.tamanho) + (p.sha256 ? " · SHA-256 " + p.sha256 : "");
+  $("#visorContador").textContent = (visorPos+1) + " de " + visorLista.length;
+  $("#visorAbrir").href = url;
+  $("#visorAnterior").disabled = visorPos === 0;
+  $("#visorProximo").disabled = visorPos === visorLista.length-1;
+  $("#visorTiras").innerHTML = visorLista.map((x,i)=>`
+    <button type="button" data-ir="${i}" class="${i===visorPos?"sel":""}" aria-label="Print ${i+1}">
+      ${ehImagem(x) ? `<img src="${esc(urlPrint(x))}" alt="">` : `<span class="doc">PDF</span>`}
+    </button>`).join("");
+  $$("#visorTiras [data-ir]").forEach(b=>b.addEventListener("click", ()=>{
+    visorPos = Number(b.dataset.ir); pintarVisor();
+  }));
+}
+function moverVisor(passo){
+  const alvo = visorPos + passo;
+  if(alvo < 0 || alvo >= visorLista.length) return;
+  visorPos = alvo; pintarVisor();
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1127,12 +1476,17 @@ function abrirModal(id){
   $("#cProcedimento").value = r?.procedimento || "";
   $("#cObs").value = r?.obs || "";
   $$("#cDestinos input").forEach(c=>c.checked = !!r && (r.destinos||[]).includes(c.value));
+  anexos = r && Array.isArray(r.prints) ? r.prints.map(p=>({...p})) : [];
+  renderAnexos();
   $("#modal").classList.add("on");
   setTimeout(()=>$("#cTeor").focus(),40);
 }
-function fecharModal(){ $("#modal").classList.remove("on"); editandoId = null; }
+function fecharModal(){
+  $("#modal").classList.remove("on");
+  editandoId = null; anexos = []; renderAnexos();
+}
 
-function salvarFormulario(ev){
+async function salvarFormulario(ev){
   ev.preventDefault();
   const cidade = $("#cCidade").value.trim();
   const dados = {
@@ -1151,29 +1505,70 @@ function salvarFormulario(ev){
     situacao: $("#cSituacao").value,
     resultado: $("#cResultado").value,
     procedimento: $("#cProcedimento").value.trim(),
-    obs: $("#cObs").value.trim()
+    obs: $("#cObs").value.trim(),
+    prints: anexos.filter(p=>!p.enviando).map(p=>({
+      id:p.id, nome:p.nome, tipo:p.tipo, tamanho:p.tamanho, sha256:p.sha256, em:p.em,
+      ...(p.dados ? {dados:p.dados} : {})
+    }))
   };
+  const erro = $("#erroForm");
   if(!dados.teor || !dados.cidade || !dados.identificador || !dados.data){
-    const e = $("#erroForm");
-    e.textContent = "Preencha o teor da postagem, a data, a cidade e o identificador.";
-    e.hidden = false; return;
+    erro.textContent = "Preencha o teor da postagem, a data, a cidade e o identificador.";
+    erro.hidden = false; return;
+  }
+  if(anexos.some(p=>p.enviando)){
+    erro.textContent = "Aguarde o envio dos prints terminar.";
+    erro.hidden = false; return;
   }
   if(dados.destinos.length && dados.situacao==="Pendente de difusão") dados.situacao = "Difundido";
-  if(editandoId){
-    const i = registros.findIndex(r=>r.id===editandoId);
-    registros[i] = {...registros[i], ...dados, demo:false};
-    aviso("Registro atualizado.");
+
+  if(modo === "compartilhado"){
+    try{
+      await subirAnexosPendentes();
+      dados.prints = anexos.map(p=>({id:p.id, nome:p.nome, tipo:p.tipo, tamanho:p.tamanho, sha256:p.sha256, em:p.em}));
+    }catch(e){
+      erro.textContent = "Falha ao enviar os prints: " + e.message;
+      erro.hidden = false; return;
+    }
+    try{
+      const resposta = editandoId
+        ? await api("PUT", "/api/registros/" + encodeURIComponent(editandoId), dados)
+        : await api("POST", "/api/registros", dados);
+      absorver(resposta);
+      aviso(editandoId ? "Registro atualizado na base compartilhada." : "Registro incluído na base compartilhada.");
+    }catch(e){
+      erro.textContent = "Não foi possível gravar: " + e.message;
+      erro.hidden = false; return;
+    }
   }else{
-    registros.unshift({id:novoId(), ...dados});
-    aviso("Registro incluído na base.");
+    if(editandoId){
+      const i = registros.findIndex(r=>r.id===editandoId);
+      registros[i] = {...registros[i], ...dados, demo:false};
+      aviso("Registro atualizado.");
+    }else{
+      registros.unshift({id:novoId(), ...dados});
+      aviso("Registro incluído na base.");
+    }
+    salvar();
   }
-  salvar(); fecharModal(); render();
+  fecharModal(); render();
 }
-function excluirAtual(){
+async function excluirAtual(){
   if(!editandoId) return;
   if(!confirm("Excluir definitivamente este registro da base?")) return;
-  registros = registros.filter(r=>r.id!==editandoId);
-  salvar(); fecharModal(); render(); aviso("Registro excluído.");
+  if(modo === "compartilhado"){
+    try{
+      absorver(await api("DELETE", "/api/registros/" + encodeURIComponent(editandoId)));
+    }catch(e){
+      const erro = $("#erroForm");
+      erro.textContent = "Não foi possível excluir: " + e.message;
+      erro.hidden = false; return;
+    }
+  }else{
+    registros = registros.filter(r=>r.id!==editandoId);
+    salvar();
+  }
+  fecharModal(); render(); aviso("Registro excluído.");
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1184,10 +1579,13 @@ const COLUNAS = [
   ["cidade","Cidade"],["regiao","Regiao de localizacao"],["identificador","Identificador"],
   ["tipoIdent","Natureza do identificador"],["tipo","Tipificacao"],["nivel","Nivel"],
   ["alcance","Alcance"],["destinos","Difusao - destinatarios"],["situacao","Situacao da difusao"],
-  ["resultado","Resultado"],["procedimento","Procedimento"],["obs","Observacoes"]
+  ["resultado","Resultado"],["procedimento","Procedimento"],["obs","Observacoes"],
+  ["prints","Prints"]
 ];
 function campoCsv(v){
-  const s = Array.isArray(v) ? v.join("; ") : String(v??"");
+  const s = Array.isArray(v)
+    ? v.map(x => (x && typeof x === "object") ? (x.nome || x.id || "") : x).join("; ")
+    : String(v??"");
   return /[";\n\r]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
 }
 /* Entrega do arquivo: usa a capacidade de download do visualizador quando a
@@ -1259,7 +1657,7 @@ function lerCsv(texto){
   if(campo || linha.length){ linha.push(campo); linhas.push(linha); }
   return linhas.filter(l=>l.some(c=>c.trim()!==""));
 }
-function importarTexto(texto, nome){
+async function importarTexto(texto, nome){
   let novos = [];
   try{
     if(/\.json$/i.test(nome) || texto.trim().startsWith("{") || texto.trim().startsWith("[")){
@@ -1282,11 +1680,22 @@ function importarTexto(texto, nome){
   }
   const limpos = novos.map(o=>normalizar(o)).filter(o=>o.teor || o.identificador || o.cidade);
   if(!limpos.length){ aviso("Nenhum registro reconhecido no arquivo."); return; }
+  const onde = modo === "compartilhado" ? "a base compartilhada" : "a base local";
+  const semPrints = /\.csv$/i.test(nome) || !limpos.some(r=>(r.prints||[]).length);
   const substituir = confirm(
-    `${limpos.length} registro(s) lido(s).\n\nOK = substituir toda a base atual.\nCancelar = acrescentar aos registros existentes.`);
-  registros = substituir ? limpos : registros.filter(r=>!r.demo).concat(limpos);
-  salvar(); render();
-  aviso(`${limpos.length} registro(s) importado(s).`);
+    `${limpos.length} registro(s) lido(s).\n\n` +
+    (semPrints ? "Atenção: planilhas CSV não transportam os prints — use o backup JSON para preservá-los.\n\n" : "") +
+    `OK = substituir todo o conteúdo de ${onde}.\nCancelar = acrescentar aos registros existentes.`);
+  if(modo === "compartilhado"){
+    try{
+      absorver(await api("POST","/api/registros/lote",{registros:limpos, substituir}));
+    }catch(e){ aviso("Falha na importação: "+e.message); return; }
+  }else{
+    registros = substituir ? limpos : registros.filter(r=>!r.demo).concat(limpos);
+    salvar();
+  }
+  render();
+  aviso(`${limpos.length} registro(s) importado(s) em ${onde}.`);
 }
 function normalizar(o){
   const cidade = String(o.cidade||"").trim();
@@ -1312,7 +1721,8 @@ function normalizar(o){
     situacao: SITUACOES.includes(o.situacao) ? o.situacao : (dest.length ? "Difundido" : "Pendente de difusão"),
     resultado: String(o.resultado||"").trim() || "Em apuração",
     procedimento: String(o.procedimento||"").trim(),
-    obs: String(o.obs||"").trim()
+    obs: String(o.obs||"").trim(),
+    prints: Array.isArray(o.prints) ? o.prints : []
   };
 }
 
@@ -1369,9 +1779,55 @@ function ligarEventos(){
   $("#formRegistro").addEventListener("submit", salvarFormulario);
   $("#modal").addEventListener("mousedown", e=>{ if(e.target.id === "modal") fecharModal(); });
   document.addEventListener("keydown", e=>{
-    if(e.key === "Escape" && $("#modal").classList.contains("on")) fecharModal();
+    if($("#visor").classList.contains("on")){
+      if(e.key === "Escape"){ fecharVisor(); return; }
+      if(e.key === "ArrowLeft"){ moverVisor(-1); return; }
+      if(e.key === "ArrowRight"){ moverVisor(1); return; }
+    }
+    if(e.key === "Escape"){
+      if($("#modalBase").classList.contains("on")) fecharModalBase();
+      else if($("#modal").classList.contains("on")) fecharModal();
+    }
     if(e.key === "/" && document.activeElement === document.body){ e.preventDefault(); $("#fBusca").focus(); }
   });
+
+  /* Prints: escolher, arrastar, colar */
+  const zona = $("#zonaPrints");
+  $("#btnEscolherPrints").addEventListener("click", ()=>$("#arquivoPrints").click());
+  zona.addEventListener("click", e=>{ if(e.target === zona) $("#arquivoPrints").click(); });
+  zona.addEventListener("keydown", e=>{ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); $("#arquivoPrints").click(); } });
+  $("#arquivoPrints").addEventListener("change", e=>{ anexarArquivos(e.target.files); e.target.value = ""; });
+  ["dragenter","dragover"].forEach(ev=>zona.addEventListener(ev, e=>{
+    e.preventDefault(); zona.classList.add("sobre");
+  }));
+  ["dragleave","drop"].forEach(ev=>zona.addEventListener(ev, e=>{
+    e.preventDefault(); zona.classList.remove("sobre");
+  }));
+  zona.addEventListener("drop", e=>anexarArquivos(e.dataTransfer.files));
+  document.addEventListener("paste", e=>{
+    if(!$("#modal").classList.contains("on")) return;
+    const arquivos = Array.from(e.clipboardData?.items || [])
+      .filter(i=>i.kind === "file").map(i=>i.getAsFile()).filter(Boolean);
+    if(arquivos.length){ e.preventDefault(); anexarArquivos(arquivos); }
+  });
+
+  /* Visualizador de prints */
+  $("#visorFechar").addEventListener("click", fecharVisor);
+  $("#visorAnterior").addEventListener("click", ()=>moverVisor(-1));
+  $("#visorProximo").addEventListener("click", ()=>moverVisor(1));
+  $("#visor").addEventListener("mousedown", e=>{ if(e.target.id === "visor") fecharVisor(); });
+
+  /* Origem dos dados */
+  $("#btnBase").addEventListener("click", abrirModalBase);
+  $("#btnFecharBase").addEventListener("click", fecharModalBase);
+  $("#btnCancelarBase").addEventListener("click", fecharModalBase);
+  $("#formBase").addEventListener("submit", conectarPeloFormulario);
+  $("#btnUsarLocal").addEventListener("click", ()=>{
+    modo = "local"; guardarConexao(); carregarLocal();
+    marcarBase(""); fecharModalBase(); render();
+    aviso("Painel usando a base local deste navegador.");
+  });
+  $("#modalBase").addEventListener("mousedown", e=>{ if(e.target.id === "modalBase") fecharModalBase(); });
   $("#cCidade").addEventListener("change", e=>{
     const sug = MAPA_CIDADE_REGIAO[e.target.value.trim()];
     if(sug) $("#cRegiao").value = sug;
@@ -1395,15 +1851,67 @@ function ligarEventos(){
   });
 }
 
-(function iniciar(){
+function abrirModalBase(){
+  $("#cServidor").value = servidor;
+  $("#cChave").value = chaveAcesso;
+  $("#statusBase").textContent = modo === "compartilhado"
+    ? "Conectado à base compartilhada" + (servidor ? " em " + servidor : " deste servidor") +
+      (protegido ? ", protegida por chave." : ", aberta a quem tiver o link.")
+    : "Usando a base local deste navegador.";
+  $("#modalBase").classList.add("on");
+  setTimeout(()=>$("#cServidor").focus(), 40);
+}
+function fecharModalBase(){ $("#modalBase").classList.remove("on"); }
+
+async function conectarPeloFormulario(ev){
+  ev.preventDefault();
+  const antesServidor = servidor, antesChave = chaveAcesso;
+  servidor = $("#cServidor").value.trim().replace(/\/+$/,"");
+  chaveAcesso = $("#cChave").value;
+  $("#statusBase").textContent = "Conectando…";
+  try{
+    await conectar();
+    marcarBase("on");
+    fecharModalBase(); render();
+    aviso(`Base compartilhada conectada — ${registros.length} registro(s).`);
+  }catch(e){
+    servidor = antesServidor; chaveAcesso = antesChave;
+    $("#statusBase").innerHTML = '<span class="erro">Não foi possível conectar: ' + esc(e.message) + "</span>";
+  }
+}
+
+/* Abre na base compartilhada sempre que ela estiver ao alcance; cai para a
+   base local quando o painel roda como arquivo solto ou o servidor não responde. */
+async function iniciarBase(){
+  const modoGravado = lerConexao();
+  const podeServidor = servidor || location.protocol === "http:" || location.protocol === "https:";
+  if(podeServidor && modoGravado !== "local"){
+    try{
+      await conectar();
+      marcarBase("on");
+      return;
+    }catch(e){
+      if(modoGravado === "compartilhado"){
+        aviso("Base compartilhada fora de alcance — abrindo a cópia local.");
+      }
+    }
+  }
+  modo = "local";
+  carregarLocal();
+  marcarBase("");
+}
+
+(async function iniciar(){
   try{ const t = localStorage.getItem(CHAVE+"_tema"); if(t) aplicarTema(t); }catch(e){}
   montarControles();
-  carregar();
   ligarEventos();
   sincronizarControles();
-  render();
   relogio();
   setInterval(relogio, 30000);
+  await iniciarBase();
+  render();
+  setInterval(sincronizar, 15000);
+  document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) sincronizar(); });
 })();
 </script>
 </body>
