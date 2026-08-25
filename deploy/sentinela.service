@@ -1,0 +1,35 @@
+[Unit]
+Description=Sentinela Eleitoral Ceará — painel de ameaças ao pleito
+Documentation=https://github.com/dvnofrnc/vida-apertada-server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=__USUARIO__
+Group=__USUARIO__
+WorkingDirectory=__APP_DIR__
+EnvironmentFile=/etc/sentinela.env
+ExecStart=/usr/bin/env node server.js
+Restart=always
+RestartSec=5
+
+# O serviço só enxerga o que precisa: o próprio código e a pasta de dados.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=__DADOS_DIR__
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictSUIDSGID=true
+LockPersonality=true
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=sentinela
+
+[Install]
+WantedBy=multi-user.target

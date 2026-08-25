@@ -1,0 +1,50 @@
+# Nginx na frente do Sentinela Eleitoral Ceará.
+#
+#   sudo cp deploy/nginx.conf.exemplo /etc/nginx/sites-available/sentinela
+#   sudo ln -s /etc/nginx/sites-available/sentinela /etc/nginx/sites-enabled/
+#   sudo nginx -t && sudo systemctl reload nginx
+#
+# Troque SEU-DOMINIO pelo endereço real antes de habilitar.
+#
+# Para o certificado HTTPS, com o domínio já apontando para este servidor:
+#   sudo apt install certbot python3-certbot-nginx
+#   sudo certbot --nginx -d SEU-DOMINIO
+# O certbot reescreve este arquivo sozinho, acrescentando o bloco 443 e a
+# renovação automática.
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name SEU-DOMINIO;
+
+    # Prints chegam por upload; o padrão do Nginx (1 MB) cortaria os maiores.
+    client_max_body_size 20m;
+
+    access_log /var/log/nginx/sentinela-acesso.log;
+    error_log  /var/log/nginx/sentinela-erro.log;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 120s;
+    }
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Restringindo o painel à rede do órgão
+#
+# A chave de acesso protege a gravação, mas a leitura da base é aberta a quem
+# alcançar o endereço. Se o painel não precisa ser acessível de fora, limite por
+# faixa de IP acrescentando ao bloco location acima:
+#
+#     allow 10.0.0.0/8;        # rede interna
+#     allow 192.168.0.0/16;    # rede interna
+#     allow 200.x.x.x;         # saída da internet do Departamento
+#     deny  all;
+#
+# Para acesso de agentes em campo, o caminho próprio é a VPN do órgão, não a
+# exposição do painel na internet aberta.

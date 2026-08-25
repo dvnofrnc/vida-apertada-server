@@ -22,7 +22,37 @@ quem abriu. Pela barra superior do painel, em **Base**, dá para apontar esse
 arquivo solto para o servidor do Departamento e passar a trabalhar na base
 compartilhada.
 
-## Publicando
+## Publicando em servidor próprio (Linux)
+
+Com acesso ao servidor por SSH, um comando resolve:
+
+```bash
+git clone https://github.com/dvnofrnc/vida-apertada-server /tmp/sentinela
+sudo bash /tmp/sentinela/deploy/instalar.sh
+```
+
+O script instala o Node se faltar, cria um usuário sem privilégios para o
+serviço, publica o código em `/opt/sentinela`, aponta os dados para
+`/var/lib/sentinela`, **gera uma chave de acesso** e registra o serviço no
+systemd, para subir sozinho a cada reinício do servidor. Ao terminar, imprime o
+endereço do painel e a chave.
+
+Rodar o mesmo comando depois de um commit novo atualiza a instalação sem perder
+dados.
+
+Para publicar sob um domínio com HTTPS, ponha o Nginx na frente —
+`deploy/nginx.conf.exemplo` traz a configuração pronta, inclusive o limite de
+upload que os prints exigem e como restringir o acesso à rede do órgão.
+
+Comandos do dia a dia:
+
+```bash
+systemctl status sentinela      # estado do serviço
+journalctl -u sentinela -f      # acompanhar o log
+systemctl restart sentinela     # reiniciar
+```
+
+## Publicando em serviço de nuvem
 
 O `render.yaml` na raiz já descreve o serviço. Em <https://render.com>:
 
