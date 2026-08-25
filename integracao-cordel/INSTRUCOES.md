@@ -5,29 +5,38 @@ Painel de monitoramento de ameaças ao pleito no Ceará: postagem, cidade,
 identificador, região de localização, difusão aos órgãos e resultado, com os
 prints que comprovam cada ocorrência.
 
-É o **card 9 do roadmap do Portal de Inteligência** (doc 13, "Padrões & Modus
-Operandi — classificação temática … ameaça") saindo do papel, e segue o
-"Padrão pra adicionar uma tela" do doc 12.
+Vizinho do card "Padrões & Modus Operandi" do roadmap (doc 13) — que classifica
+**o acervo** de extrações — mas não o mesmo: aqui o objeto é a postagem pública
+captada em monitoramento, não o UFDR. Por isso entra como card próprio, e aquele
+segue "Em breve". Estrutura conforme o "Padrão pra adicionar uma tela" (doc 12).
 
-## Arquivos
+## Aplicação — o caminho curto
 
-| Deste pacote | Vai para |
-|---|---|
-| `cordel_sentinela.py` | `cordel_server/cordel_sentinela.py` |
-| `sentinela.html` | `cordel_server/static/sentinela.html` |
+```bash
+cp cordel_sentinela.py cordel_server/
+cp sentinela.html      cordel_server/static/
+git apply --check api.py.patch     # confere sem gravar
+git apply         api.py.patch     # aplica
+```
 
-Nada mais é copiado. As três alterações no `api.py` estão abaixo, e o card no
-portal, no fim.
+O `api.py.patch` traz as três alterações no `api.py` e o card no portal, já
+verificado: aplicado contra `origin/feat-gdocs-docx`, o `api.py` resultante
+compila, a chamada `montar()` fica no nível do módulo e depois do
+`_exige_intel`, e a regra de Host cai dentro do `_auth_mw`.
 
-## As três alterações no `api.py`
+O que o patch faz está descrito abaixo, para revisão antes de aplicar.
 
-### 1. Montar o módulo (perto do bloco de INTELIGÊNCIA, após `_exige_intel`)
+## O que o patch altera no `api.py`
 
-`_exige_intel` está definido em `api.py` na altura da linha 20409; monte logo
-depois dele, para que a função já exista quando o módulo for montado.
+### 1. Montar o módulo (logo após o `_exige_intel`, antes do `_intel_hubs_cache`)
+
+A ordem importa: `montar()` roda na subida do processo e usa `_exige_intel`, que
+precisa já estar definido.
 
 ```python
-# ══════════════ SENTINELA ELEITORAL (card 9: classificação de AMEAÇA) ══════════════
+# ══════════════ SENTINELA ELEITORAL — ameaças ao pleito (DIP) ══════════════
+# Módulo à parte (cordel_sentinela.py). Não importa este arquivo: recebe os gates
+# e os caminhos por parâmetro, então dá para testar isolado e não cria ciclo.
 import cordel_sentinela
 
 cordel_sentinela.montar(
@@ -44,10 +53,10 @@ cordel_sentinela.montar(
 O módulo não importa `api.py` — recebe tudo por parâmetro. Sem import circular,
 e dá para testar isolado (foi assim que ele foi validado).
 
-### 2. Roteamento por Host do novo subdomínio (no `_auth_mw`, ~linha 806)
+### 2. Roteamento por Host do novo subdomínio (no `_auth_mw`)
 
-Hoje o middleware trata `inteligencia.`. Acrescente o `sentinela.` logo depois,
-no mesmo espírito: esse subdomínio serve **só** o Sentinela.
+Entra logo depois do bloco do `inteligencia.`, no mesmo espírito: esse
+subdomínio serve **só** o Sentinela.
 
 ```python
     # sentinela.redecordel.com.br → SÓ o Sentinela Eleitoral. Qualquer outra
@@ -60,14 +69,24 @@ no mesmo espírito: esse subdomínio serve **só** o Sentinela.
             return RedirectResponse("/intel/sentinela")
 ```
 
-### 3. Raiz do subdomínio (na função que hoje decide entre `/inteligencia` e `/app`, ~linha 20390)
+### 3. Raiz do subdomínio (onde hoje se decide entre `/inteligencia` e `/app`)
 
 ```python
-    if request.headers.get("host", "").lower().startswith("sentinela."):
+    _host = request.headers.get("host", "").lower()
+    if _host.startswith("sentinela."):
         return RedirectResponse("/intel/sentinela")
-    if request.headers.get("host", "").lower().startswith("inteligencia."):
+    if _host.startswith("inteligencia."):
         return RedirectResponse("/inteligencia")
     return RedirectResponse("/app")
+```
+
+### 4. Card no portal (`static/inteligencia.html`)
+
+Um card novo ao fim do grid, no mesmo formato dos que já estão disponíveis:
+
+```html
+<a class="card on" href="/intel/sentinela" style="text-decoration:none;color:inherit;display:block"><div class="ic">🛡️</div><span class="soon">Disponível</span>
+  <h3>Sentinela Eleitoral</h3><p>Ameaças ao pleito no Ceará: postagem, município, identificador, região de planejamento, difusão aos órgãos e resultado — com os prints anexados.</p></a>
 ```
 
 ## DNS do subdomínio
@@ -88,21 +107,6 @@ roteamento é por Host, **não é preciso mexer no `config.yml` nem no Caddyfile
 > incomodar no uso, a página continua acessível por
 > `inteligencia.redecordel.com.br/intel/sentinela`, sem login adicional; basta
 > não divulgar o subdomínio.
-
-## Card no portal (`static/inteligencia.html`)
-
-No grid dos 9 cards, o card 9 deixa de ser "planejado":
-
-```html
-<a class="card" href="/intel/sentinela">
-  <h3>Sentinela Eleitoral</h3>
-  <p>Ameaças ao pleito: postagem, município, identificador, região, difusão
-     aos órgãos e resultado — com os prints.</p>
-  <span class="tag ok">disponível</span>
-</a>
-```
-
-Ajuste as classes ao que o `inteligencia.html` já usa nos outros cards.
 
 ## Deploy
 
@@ -159,3 +163,15 @@ Contra um CORDEL simulado (FastAPI real, cookie de sessão, `_exige_intel`,
 - arquivo com extensão de imagem e conteúdo de executável → `415`;
 - duas sessões enxergando a mesma base;
 - página sem erro de runtime, nos temas claro e escuro.
+
+E o encaixe no CORDEL de verdade, contra `origin/feat-gdocs-docx`:
+
+- as quatro âncoras do patch aparecem **uma única vez** no arquivo real;
+- `git apply --check` passa nos dois arquivos, sem conflito;
+- o `api.py` alterado compila e a árvore sintática continua íntegra;
+- `montar()` no nível do módulo e depois do `_exige_intel` — conferido na AST,
+  não no olho;
+- `cordel_sentinela.py` importa dentro de `cordel_server/`.
+
+O que **não** foi verificado: o processo `cordel-web` subindo de fato, com as
+dependências e os bancos de vocês. Isso só na máquina.

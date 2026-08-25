@@ -1,0 +1,79 @@
+# Sentinela Eleitoral — alterações no CORDEL Web
+#
+# Gerado contra origin/feat-gdocs-docx do dvnofrnc/cordel e verificado: o api.py alterado
+# compila, a chamada montar() fica no nível do módulo e depois do _exige_intel,
+# e a regra de Host entra dentro do _auth_mw.
+#
+# Aplicar da raiz do repositório do CORDEL:
+#     git apply --check integracao/api.py.patch   # confere sem gravar
+#     git apply           integracao/api.py.patch
+#
+# Antes: copie cordel_sentinela.py para cordel_server/ e sentinela.html para
+# cordel_server/static/ — o patch não os inclui (arquivos novos vão inteiros).
+--- a/cordel_server/api.py
++++ b/cordel_server/api.py
+@@ -809,6 +809,14 @@
+                      "/assets/", "/favicon", "/auth", "/eu", "/l/")
+         if request.method == "GET" and not any(_p == a or _p.startswith(a) for a in _intel_ok):
+             return RedirectResponse("/inteligencia")
++    # SENTINELA (sentinela.redecordel.com.br): esse subdomínio serve SÓ o Sentinela
++    # Eleitoral + login/estáticos — mesma separação real do portal INTEL acima.
++    if request.headers.get("host", "").lower().startswith("sentinela."):
++        _p = request.url.path
++        _sent_ok = ("/intel/sentinela", "/login", "/logout", "/reset-senha", "/static/",
++                    "/assets/", "/favicon", "/auth", "/eu")
++        if request.method == "GET" and not any(_p == a or _p.startswith(a) for a in _sent_ok):
++            return RedirectResponse("/intel/sentinela")
+     from urllib.parse import unquote
+     path = request.url.path
+     if any(path == p or path.startswith(p) for p in _PUBLICO):
+@@ -20387,8 +20395,12 @@
+ 
+ @app.get("/")
+ def home(request: Request):
+-    # inteligencia.redecordel.com.br → portal de INTEL; demais hosts → app de casos
+-    if request.headers.get("host", "").lower().startswith("inteligencia."):
++    # inteligencia.redecordel.com.br → portal de INTEL; sentinela.* → Sentinela
++    # Eleitoral; demais hosts → app de casos
++    _host = request.headers.get("host", "").lower()
++    if _host.startswith("sentinela."):
++        return RedirectResponse("/intel/sentinela")
++    if _host.startswith("inteligencia."):
+         return RedirectResponse("/inteligencia")
+     return RedirectResponse("/app")
+ 
+@@ -20414,6 +20426,22 @@
+     return u
+ 
+ 
++# ══════════════ SENTINELA ELEITORAL — ameaças ao pleito (DIP) ══════════════
++# Módulo à parte (cordel_sentinela.py). Não importa este arquivo: recebe os gates
++# e os caminhos por parâmetro, então dá para testar isolado e não cria ciclo.
++import cordel_sentinela
++
++cordel_sentinela.montar(
++    app,
++    STATIC=STATIC,
++    CASOS=CASOS,
++    exige_intel=_exige_intel,       # o gate DIP/COIN, reaproveitado inteiro
++    sql_wal=_sql_wal,               # mesmo regime WAL das outras conexões
++    usuario_atual=_usuario_atual,
++    ve_tudo=_ve_tudo,
++)
++
++
+ _intel_hubs_cache = {"data": None, "ts": 0}
+ 
+ 
+--- a/cordel_server/static/inteligencia.html
++++ b/cordel_server/static/inteligencia.html
+@@ -96,6 +96,9 @@
+ 
+     <div class="card"><div class="ic">🧩</div><span class="soon">Em breve</span>
+       <h3>Padrões & Modus Operandi</h3><p>Classificação temática do acervo (recrutamento, oferta de arma, ordem de facção, ameaça) para ver tendência e reincidência de MO.</p></div>
++
++    <a class="card on" href="/intel/sentinela" style="text-decoration:none;color:inherit;display:block"><div class="ic">🛡️</div><span class="soon">Disponível</span>
++      <h3>Sentinela Eleitoral</h3><p>Ameaças ao pleito no Ceará: postagem, município, identificador, região de planejamento, difusão aos órgãos e resultado — com os prints anexados.</p></a>
+   </div>
+ </div>
+ 

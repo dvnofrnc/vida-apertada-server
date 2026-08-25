@@ -2,10 +2,12 @@
 """
 cordel_sentinela.py — Sentinela Eleitoral (monitoramento de ameaças ao pleito)
 ==============================================================================
-Card 9 do roadmap do Portal de Inteligência (doc 13): classificação temática de
-AMEAÇA. Registra postagens com ameaça ao processo eleitoral — cidade,
-identificador do autor, região de localização, difusão aos órgãos e o resultado
-— com os prints que comprovam cada uma.
+Capacidade do Portal de Inteligência (doc 13). Registra postagens com ameaça ao
+processo eleitoral — cidade, identificador do autor, região de localização,
+difusão aos órgãos e o resultado — com os prints que comprovam cada uma.
+
+Vizinho do card "Padrões & Modus Operandi" do roadmap, que classifica O ACERVO
+de extrações; aqui o objeto é a postagem pública captada em monitoramento.
 
 Segue o padrão do doc 12 ("Padrão pra adicionar uma tela"):
   1. HTML em static/sentinela.html
