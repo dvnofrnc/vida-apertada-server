@@ -22,7 +22,13 @@ app.use(express.json({ limit: '50mb' }));
 
 // ── HEALTH ──────────────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
-  res.json({ status: 'ok', message: 'Vida Apertada API Proxy' });
+  res.json({ status: 'ok', message: 'Vida Apertada API Proxy', dashboard: '/dashboard' });
+});
+
+// ── DASHBOARD ───────────────────────────────────────────────────────────────
+// Painel de monitoramento de ameaças ao pleito (Departamento de Inteligência)
+app.get('/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dashboard', 'sentinela-eleitoral-ce.html'));
 });
 
 // ── MODELOS ─────────────────────────────────────────────────────────────────
