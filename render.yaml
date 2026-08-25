@@ -1,0 +1,38 @@
+# Publicação no Render — https://render.com
+#
+# Ao conectar este repositório em Render → New → Blueprint, este arquivo cria o
+# serviço já configurado: disco persistente montado e DATA_DIR apontado para ele,
+# de modo que os registros e os prints do painel sobrevivam a reinícios e novos
+# deploys.
+#
+# O disco exige um plano pago (starter). No plano gratuito o Render não oferece
+# disco e hiberna o serviço: a base seria apagada a cada reinício — inadequado
+# para dados de trabalho.
+services:
+  - type: web
+    name: vida-apertada-server
+    runtime: node
+    plan: starter
+    region: oregon
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # Onde a base do painel e os prints são gravados (o disco montado abaixo).
+      - key: DATA_DIR
+        value: /var/dados
+      # Chave de acesso do painel. Preencha no painel do Render, em Environment.
+      # Com ela definida, toda gravação exige a chave; sem ela, qualquer pessoa
+      # com o endereço grava e exclui registros.
+      - key: SENTINELA_CHAVE
+        sync: false
+      # Usada apenas pelo proxy do app Vida Apertada, não pelo painel.
+      - key: ANTHROPIC_API_KEY
+        sync: false
+    disk:
+      name: dados
+      mountPath: /var/dados
+      sizeGB: 5
