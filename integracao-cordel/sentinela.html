@@ -1,0 +1,1687 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sentinela Eleitoral — CORDEL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* ─────────────────────────────────────────────────────────────
+   TOKENS — paleta institucional fria (aço/azul-noite) + status
+   ───────────────────────────────────────────────────────────── */
+:root{
+  color-scheme: light;
+  --ground:#e8ecf1;
+  --surface:#ffffff;
+  --surface-2:#f4f6fa;
+  --surface-3:#e8edf4;
+  --ink:#101620;
+  --ink-2:#3f4a5a;
+  --muted:#6e7a8b;
+  --border:#d6dde6;
+  --border-strong:#bcc6d4;
+  --accent:#1b4d7e;
+  --accent-ink:#ffffff;
+  --accent-soft:#e2ecf7;
+  --focus:#2a78d6;
+  --bar:#2a78d6;
+  --bar-soft:#cde2fb;
+  --shadow: 0 1px 2px rgba(16,22,32,.06), 0 8px 24px rgba(16,22,32,.06);
+
+  --st-good:#0ca30c;
+  --st-warn:#fab219;
+  --st-serious:#ec835a;
+  --st-crit:#d03b3b;
+  --st-good-bg:#e6f5e6;
+  --st-warn-bg:#fdf2da;
+  --st-serious-bg:#fbebe3;
+  --st-crit-bg:#fae6e6;
+
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  --s5:#e87ba4; --s6:#008300; --s7:#4a3aa7; --s8:#e34948;
+
+  --fs-xs:11px; --fs-sm:12.5px; --fs-base:14px; --fs-md:15px;
+  --fs-lg:19px; --fs-xl:30px; --fs-title:20px;
+  --r:5px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --ground:#0a0e13;
+    --surface:#131922;
+    --surface-2:#1a222c;
+    --surface-3:#212b37;
+    --ink:#e9eef5;
+    --ink-2:#a9b5c3;
+    --muted:#7b8798;
+    --border:#252f3b;
+    --border-strong:#38434f;
+    --accent:#6ba7de;
+    --accent-ink:#0a0e13;
+    --accent-soft:#16283a;
+    --focus:#5598e7;
+    --bar:#3987e5;
+    --bar-soft:#193453;
+    --shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 28px rgba(0,0,0,.45);
+    --st-good-bg:#0f2a12; --st-warn-bg:#33270a; --st-serious-bg:#33200f; --st-crit-bg:#331313;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+    --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --ground:#0a0e13;
+  --surface:#131922;
+  --surface-2:#1a222c;
+  --surface-3:#212b37;
+  --ink:#e9eef5;
+  --ink-2:#a9b5c3;
+  --muted:#7b8798;
+  --border:#252f3b;
+  --border-strong:#38434f;
+  --accent:#6ba7de;
+  --accent-ink:#0a0e13;
+  --accent-soft:#16283a;
+  --focus:#5598e7;
+  --bar:#3987e5;
+  --bar-soft:#193453;
+  --shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 28px rgba(0,0,0,.45);
+  --st-good-bg:#0f2a12; --st-warn-bg:#33270a; --st-serious-bg:#33200f; --st-crit-bg:#331313;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"IBM Plex Sans","Segoe UI",system-ui,-apple-system,sans-serif;
+  font-size:var(--fs-base);
+  line-height:1.5;
+}
+h1,h2,h3{font-family:"Archivo","Archivo Narrow",system-ui,sans-serif;margin:0;text-wrap:balance;letter-spacing:-.01em}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:3px}
+.num{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+/* ── Barra superior ─────────────────────────────────────────── */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:18px;
+  padding:12px 22px;
+  flex-wrap:wrap;
+}
+.brand{display:flex;align-items:center;gap:13px;min-width:0}
+.crest{
+  width:36px;height:40px;flex:none;
+  background:var(--accent);
+  color:var(--accent-ink);
+  clip-path:polygon(0 0,100% 0,100% 68%,50% 100%,0 68%);
+  display:grid;place-items:center;
+  font-family:"Archivo",sans-serif;font-weight:700;font-size:13px;letter-spacing:.04em;
+  padding-bottom:6px;
+}
+.brand h1{font-size:var(--fs-title);font-weight:700;line-height:1.15}
+.brand .sub{font-size:var(--fs-xs);color:var(--muted);text-transform:uppercase;letter-spacing:.09em;font-weight:600}
+.topbar .spacer{flex:1 1 auto}
+.clock{font-size:var(--fs-sm);color:var(--ink-2);text-align:right;line-height:1.35}
+.clock b{display:block;font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--ink);font-size:var(--fs-base)}
+.pleito{
+  display:flex;align-items:baseline;gap:7px;
+  background:var(--accent-soft);border:1px solid var(--border);
+  border-radius:var(--r);padding:6px 11px;
+}
+.pleito .d{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:var(--fs-md);color:var(--accent)}
+.pleito .l{font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+
+/* ── Botões ─────────────────────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--surface);border:1px solid var(--border-strong);
+  color:var(--ink);border-radius:var(--r);
+  padding:7px 12px;font-size:var(--fs-sm);font-weight:600;
+  cursor:pointer;white-space:nowrap;
+  transition:background .12s ease,border-color .12s ease;
+}
+.btn:hover{background:var(--surface-2);border-color:var(--accent)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn-primary:hover{background:var(--accent);filter:brightness(1.1)}
+.btn-danger{color:var(--st-crit);border-color:var(--border-strong)}
+.btn-danger:hover{background:var(--st-crit-bg);border-color:var(--st-crit)}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--ink-2);padding:5px 8px}
+.btn-ghost:hover{background:var(--surface-3);color:var(--ink)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.ponto{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
+.ponto.on{background:var(--st-good)}
+.ponto.off{background:var(--st-crit)}
+.ponto.sync{background:var(--st-warn)}
+
+/* ── Estrutura ──────────────────────────────────────────────── */
+main{max-width:1680px;margin:0 auto;padding:18px 22px 60px;display:flex;flex-direction:column;gap:16px}
+.panel{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);box-shadow:var(--shadow);
+}
+.panel-head{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 15px;border-bottom:1px solid var(--border);
+}
+.panel-head h2{font-size:var(--fs-md);font-weight:600}
+.panel-head .hint{font-size:var(--fs-xs);color:var(--muted);margin-left:auto;text-transform:uppercase;letter-spacing:.07em;font-weight:600}
+.panel-body{padding:15px}
+
+.notice{
+  display:flex;gap:11px;align-items:flex-start;
+  background:var(--st-warn-bg);
+  border:1px solid var(--border);border-left:4px solid var(--st-warn);
+  border-radius:var(--r);padding:11px 14px;font-size:var(--fs-sm);color:var(--ink-2);
+}
+.notice strong{color:var(--ink)}
+.notice .spacer{flex:1}
+.notice[hidden]{display:none}
+
+/* ── Filtros ────────────────────────────────────────────────── */
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;padding:13px 15px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.field input,.field select,.field textarea{
+  background:var(--surface-2);border:1px solid var(--border-strong);
+  border-radius:var(--r);padding:7px 9px;font-size:var(--fs-sm);
+  min-width:0;width:100%;
+}
+.field input:hover,.field select:hover{border-color:var(--accent)}
+.field textarea{resize:vertical;min-height:74px;line-height:1.45}
+.f-busca{flex:2 1 260px}
+.f-sel{flex:1 1 165px}
+.filters .acoes{margin-left:auto;display:flex;gap:8px}
+.chip-ativo{
+  display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-xs);font-weight:600;
+  background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent);
+  border-radius:999px;padding:3px 9px;
+}
+
+/* ── KPIs ───────────────────────────────────────────────────── */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(168px,100%),1fr));gap:12px}
+.kpi{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:13px 15px;display:flex;flex-direction:column;gap:3px;box-shadow:var(--shadow);
+  border-top:3px solid var(--border-strong);
+}
+.kpi .rot{font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.kpi .val{font-family:"Archivo",sans-serif;font-size:var(--fs-xl);font-weight:700;line-height:1.05;font-variant-numeric:tabular-nums}
+.kpi .nota{font-size:var(--fs-xs);color:var(--ink-2)}
+.kpi.crit{border-top-color:var(--st-crit)}
+.kpi.crit .val{color:var(--st-crit)}
+.kpi.ok{border-top-color:var(--st-good)}
+.kpi.acc{border-top-color:var(--accent)}
+.kpi.warn{border-top-color:var(--st-warn)}
+
+/* ── Gráficos ───────────────────────────────────────────────── */
+.graficos{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(440px,100%),1fr));gap:16px;align-items:start}
+.graficos .panel.wide{grid-column:1/-1}
+.bars{display:flex;flex-direction:column;gap:7px}
+.bar-row{display:grid;grid-template-columns:minmax(112px,200px) 1fr 46px;align-items:center;gap:10px;cursor:pointer;background:none;border:0;padding:2px 0;text-align:left;width:100%}
+.bar-row .rot{font-size:var(--fs-sm);color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-row:hover .rot{color:var(--ink)}
+.bar-row .track{background:var(--surface-3);border-radius:3px;height:14px;position:relative;overflow:hidden}
+.bar-row .fill{position:absolute;inset:0 auto 0 0;background:var(--bar);border-radius:0 4px 4px 0;min-width:2px;transition:width .35s cubic-bezier(.4,0,.2,1)}
+.bar-row:hover .fill{filter:brightness(1.12)}
+.bar-row.sel .fill{background:var(--accent)}
+.bar-row.sel .rot{color:var(--accent);font-weight:600}
+.bar-row .v{font-family:"IBM Plex Mono",monospace;font-size:var(--fs-sm);font-weight:500;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+.bar-row.n-baixo .fill{background:var(--st-good)}
+.bar-row.n-medio .fill{background:var(--st-warn)}
+.bar-row.n-alto .fill{background:var(--st-serious)}
+.bar-row.n-critico .fill{background:var(--st-crit)}
+
+.tl{display:flex;align-items:flex-end;gap:4px;height:130px;padding-top:6px;border-bottom:1px solid var(--border)}
+.tl-col{flex:1 1 0;display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;gap:3px;height:100%;cursor:default;min-width:0}
+.tl-col .stack{display:flex;flex-direction:column;justify-content:flex-end;gap:2px;height:100%;width:100%;max-width:58px;margin:0 auto}
+.tl-col i{display:block;border-radius:3px 3px 0 0;min-height:2px}
+.tl-col i:first-child{border-radius:3px}
+.tl-col .d{font-family:"IBM Plex Mono",monospace;font-size:9.5px;color:var(--muted);text-align:center;white-space:nowrap;overflow:hidden}
+.tl-col:hover i{filter:brightness(1.18)}
+.legenda{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:12px;padding-top:11px;border-top:1px solid var(--border)}
+.legenda span{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-xs);color:var(--ink-2);font-weight:500}
+.legenda i{width:10px;height:10px;border-radius:2px;flex:none}
+.vazio{color:var(--muted);font-size:var(--fs-sm);padding:20px 0;text-align:center}
+
+/* ── Pílulas de estado ──────────────────────────────────────── */
+.pill{
+  display:inline-flex;align-items:center;gap:5px;
+  border-radius:999px;padding:2px 9px 2px 7px;
+  font-size:var(--fs-xs);font-weight:600;white-space:nowrap;
+  border:1px solid var(--border);background:var(--surface-2);color:var(--ink);
+}
+.pill i{width:7px;height:7px;border-radius:50%;flex:none}
+.pill.baixo{background:var(--st-good-bg)} .pill.baixo i{background:var(--st-good)}
+.pill.medio{background:var(--st-warn-bg)} .pill.medio i{background:var(--st-warn)}
+.pill.alto{background:var(--st-serious-bg)} .pill.alto i{background:var(--st-serious)}
+.pill.critico{background:var(--st-crit-bg)} .pill.critico i{background:var(--st-crit)}
+.pill.neutro i{background:var(--muted)}
+.pill.acc{background:var(--accent-soft);border-color:var(--accent)} .pill.acc i{background:var(--accent)}
+
+/* ── Tabela ─────────────────────────────────────────────────── */
+.tabela-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:1180px}
+thead th{
+  position:sticky;top:0;z-index:2;
+  background:var(--surface-2);
+  border-bottom:1px solid var(--border-strong);
+  text-align:left;padding:9px 12px;
+  font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.08em;
+  color:var(--muted);font-weight:600;white-space:nowrap;
+}
+thead th.ord{cursor:pointer;user-select:none}
+thead th.ord:hover{color:var(--ink)}
+thead th .seta{color:var(--accent)}
+tbody td{border-bottom:1px solid var(--border);padding:10px 12px;vertical-align:top;font-size:var(--fs-sm)}
+tbody tr:hover{background:var(--surface-2)}
+tbody tr td:first-child{border-left:3px solid transparent}
+tr.n-baixo td:first-child{border-left-color:var(--st-good)}
+tr.n-medio td:first-child{border-left-color:var(--st-warn)}
+tr.n-alto td:first-child{border-left-color:var(--st-serious)}
+tr.n-critico td:first-child{border-left-color:var(--st-crit)}
+.c-post{max-width:400px}
+.c-post .teor{color:var(--ink);line-height:1.45}
+.c-post .meta{display:flex;flex-wrap:wrap;gap:5px 10px;margin-top:5px;font-size:var(--fs-xs);color:var(--muted)}
+.c-post .meta a{color:var(--accent);text-decoration:none;font-weight:600}
+.c-post .meta a:hover{text-decoration:underline}
+.ident{font-family:"IBM Plex Mono",monospace;font-size:var(--fs-sm);color:var(--ink);word-break:break-all}
+.ident small{display:block;font-family:"IBM Plex Sans",sans-serif;color:var(--muted);font-size:var(--fs-xs);word-break:normal}
+.dest{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.dest b{font-weight:500;font-size:10.5px;background:var(--surface-3);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--ink-2);white-space:nowrap}
+.linhas-acoes{display:flex;gap:2px}
+.data-cel{white-space:nowrap;font-family:"IBM Plex Mono",monospace;font-size:var(--fs-sm)}
+.data-cel small{display:block;font-family:"IBM Plex Sans",sans-serif;color:var(--muted);font-size:var(--fs-xs)}
+.rodape-tab{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:11px 15px;border-top:1px solid var(--border);font-size:var(--fs-sm);color:var(--muted)}
+
+/* ── Modal ──────────────────────────────────────────────────── */
+.backdrop{
+  position:fixed;inset:0;z-index:80;background:rgba(8,12,18,.55);
+  display:none;align-items:flex-start;justify-content:center;padding:26px 16px;overflow:auto;
+}
+.backdrop.on{display:flex}
+.modal{
+  background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--r);
+  box-shadow:0 24px 64px rgba(0,0,0,.4);width:min(920px,100%);
+}
+.modal header{display:flex;align-items:center;gap:12px;padding:15px 18px;border-bottom:1px solid var(--border)}
+.modal header h2{font-size:var(--fs-lg);font-weight:700}
+.modal .corpo{padding:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));gap:14px}
+.modal .corpo .full{grid-column:1/-1}
+.modal footer{display:flex;gap:9px;justify-content:flex-end;padding:14px 18px;border-top:1px solid var(--border);background:var(--surface-2);border-radius:0 0 var(--r) var(--r)}
+.checks{display:flex;flex-wrap:wrap;gap:6px}
+.checks label{
+  display:inline-flex;align-items:center;gap:6px;cursor:pointer;
+  border:1px solid var(--border-strong);border-radius:999px;padding:4px 11px;
+  background:var(--surface-2);white-space:nowrap;
+  font-size:var(--fs-sm);font-weight:500;color:var(--ink);
+  text-transform:none;letter-spacing:0;
+}
+.checks label:hover{border-color:var(--accent)}
+.checks input{accent-color:var(--accent);margin:0}
+.checks label:has(input:checked){background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+.erro{color:var(--st-crit);font-size:var(--fs-sm);font-weight:600}
+
+/* ── Prints ─────────────────────────────────────────────────────────── */
+.dropzone{
+  border:1.5px dashed var(--border-strong);border-radius:var(--r);
+  padding:14px;text-align:center;font-size:var(--fs-sm);color:var(--ink-2);
+  background:var(--surface-2);cursor:pointer;transition:border-color .12s ease,background .12s ease;
+}
+.dropzone:hover,.dropzone:focus-visible{border-color:var(--accent);background:var(--accent-soft)}
+.dropzone.sobre{border-color:var(--accent);background:var(--accent-soft);border-style:solid}
+.dropzone small{display:block;margin-top:5px;color:var(--muted);font-size:var(--fs-xs)}
+.dropzone .btn{padding:3px 9px}
+.anexos{display:flex;flex-wrap:wrap;gap:9px;margin-top:10px}
+.anexo{
+  position:relative;width:104px;border:1px solid var(--border);border-radius:var(--r);
+  overflow:hidden;background:var(--surface-2);
+}
+.anexo .mini{display:block;width:100%;height:74px;object-fit:cover;background:var(--surface-3)}
+.anexo .doc{display:grid;place-items:center;height:74px;font-size:22px;color:var(--muted)}
+.anexo .nome{display:block;padding:4px 6px;font-size:10px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.anexo .tirar{
+  position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;
+  border:0;background:rgba(10,14,19,.72);color:#fff;font-size:12px;line-height:1;cursor:pointer;
+}
+.anexo .tirar:hover{background:var(--st-crit)}
+.anexo.enviando{opacity:.55}
+.selo-prints{
+  display:inline-flex;align-items:center;gap:5px;border:1px solid var(--border-strong);
+  background:var(--surface-2);border-radius:999px;padding:1px 9px;font-size:var(--fs-xs);
+  font-weight:600;color:var(--ink);cursor:pointer;
+}
+.selo-prints:hover{border-color:var(--accent);color:var(--accent)}
+
+.visor{
+  position:fixed;inset:0;z-index:100;background:#070a0e;
+  display:none;flex-direction:column;
+}
+.visor.on{display:flex}
+.visor-topo{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.13);color:#f2f5f9}
+.visor-info{display:flex;flex-direction:column;min-width:0}
+.visor-info b{font-size:var(--fs-md);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.visor-info span{font-family:"IBM Plex Mono",monospace;font-size:var(--fs-xs);color:#9fb0c2;word-break:break-all}
+.visor-contador{color:#9fb0c2;font-size:var(--fs-sm)}
+.visor-topo .btn{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.2);color:#f2f5f9;text-decoration:none}
+.visor-topo .btn:hover{background:rgba(255,255,255,.17)}
+.visor-palco{flex:1;display:flex;align-items:center;gap:8px;padding:14px;min-height:0}
+.visor-quadro{flex:1;height:100%;display:grid;place-items:center;overflow:auto}
+.visor-quadro img{max-width:100%;max-height:100%;object-fit:contain;border-radius:3px;background:#fff}
+.visor-quadro iframe{width:100%;height:100%;border:0;border-radius:3px;background:#fff}
+.visor-quadro .aviso-visor{color:#9fb0c2;font-size:var(--fs-sm)}
+.visor-nav{
+  flex:none;width:44px;height:74px;border-radius:var(--r);border:1px solid rgba(255,255,255,.2);
+  background:rgba(255,255,255,.08);color:#f2f5f9;font-size:26px;cursor:pointer;
+}
+.visor-nav:hover{background:rgba(255,255,255,.18)}
+.visor-nav[disabled]{opacity:.25;cursor:default}
+.visor-tiras{display:flex;gap:7px;padding:10px 16px 16px;overflow-x:auto}
+.visor-tiras button{
+  flex:none;width:74px;height:52px;border-radius:4px;border:2px solid transparent;
+  overflow:hidden;background:rgba(255,255,255,.08);cursor:pointer;padding:0;
+}
+.visor-tiras button.sel{border-color:var(--accent)}
+.visor-tiras img{width:100%;height:100%;object-fit:cover;display:block}
+.visor-tiras .doc{display:grid;place-items:center;height:100%;color:#9fb0c2;font-size:19px}
+
+/* ── Tooltip ────────────────────────────────────────────────── */
+#tip{
+  position:fixed;z-index:90;pointer-events:none;opacity:0;
+  background:var(--ink);color:var(--surface);
+  border-radius:4px;padding:6px 9px;font-size:var(--fs-xs);line-height:1.4;
+  max-width:260px;transition:opacity .1s ease;box-shadow:0 6px 18px rgba(0,0,0,.28);
+}
+#tip.on{opacity:1}
+#tip b{font-family:"IBM Plex Mono",monospace}
+
+.toast{
+  position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(14px);
+  background:var(--ink);color:var(--surface);border-radius:var(--r);
+  padding:10px 16px;font-size:var(--fs-sm);font-weight:600;z-index:95;
+  opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease;
+}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:760px){
+  .topbar{padding:10px 14px} main{padding:14px}
+  .clock,.pleito{display:none}
+  .modal .corpo{grid-template-columns:1fr}
+}
+@media print{
+  .topbar{position:static} .filters,.linhas-acoes,.acoes,.btn,.notice{display:none!important}
+  body{background:#fff} .panel{box-shadow:none;break-inside:avoid}
+  table{min-width:0;font-size:10px} .graficos{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="crest">DIP</div>
+    <div>
+      <h1>Sentinela Eleitoral Ceará</h1>
+      <div class="sub">Departamento de Inteligência&nbsp;·&nbsp;Monitoramento de ameaças ao pleito</div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <div class="pleito" id="pleito">
+    <span class="d" id="pleitoDias">—</span>
+    <span class="l">dias para o pleito</span>
+  </div>
+  <div class="clock">
+    <b id="relogio">—</b>
+    <span id="dataHoje">—</span>
+  </div>
+  <a class="btn" href="/inteligencia" title="Voltar ao Portal de Inteligência">← Portal</a>
+  <span class="btn" id="chipUsuario" style="cursor:default"><span class="ponto" id="pontoBase"></span><span id="rotuloBase">conectando…</span></span>
+  <button class="btn" id="btnTema" title="Alternar tema claro/escuro">◐ Tema</button>
+  <button class="btn" id="btnImprimir">⎙ Relatório</button>
+  <button class="btn btn-primary" id="btnNovo">+ Novo registro</button>
+</header>
+
+<main>
+
+  <!-- FILTROS -->
+  <section class="panel">
+    <div class="filters">
+      <div class="field f-busca">
+        <label for="fBusca">Busca livre</label>
+        <input id="fBusca" type="search" placeholder="teor da postagem, identificador, cidade, providência…" autocomplete="off">
+      </div>
+      <div class="field f-sel">
+        <label for="fRegiao">Região</label>
+        <select id="fRegiao"><option value="">Todas</option></select>
+      </div>
+      <div class="field f-sel">
+        <label for="fCidade">Município</label>
+        <select id="fCidade"><option value="">Todos</option></select>
+      </div>
+      <div class="field f-sel">
+        <label for="fNivel">Nível da ameaça</label>
+        <select id="fNivel"><option value="">Todos</option></select>
+      </div>
+      <div class="field f-sel">
+        <label for="fDifusao">Situação da difusão</label>
+        <select id="fDifusao"><option value="">Todas</option></select>
+      </div>
+      <div class="field f-sel">
+        <label for="fResultado">Resultado</label>
+        <select id="fResultado"><option value="">Todos</option></select>
+      </div>
+      <div class="field f-sel">
+        <label for="fPeriodo">Período</label>
+        <select id="fPeriodo">
+          <option value="">Todo o histórico</option>
+          <option value="7">Últimos 7 dias</option>
+          <option value="15">Últimos 15 dias</option>
+          <option value="30">Últimos 30 dias</option>
+          <option value="90">Últimos 90 dias</option>
+        </select>
+      </div>
+      <div class="acoes">
+        <button class="btn btn-ghost" id="btnLimparFiltros">Limpar filtros</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- INDICADORES -->
+  <section class="kpis" id="kpis"></section>
+
+  <!-- GRÁFICOS -->
+  <section class="graficos">
+    <div class="panel">
+      <div class="panel-head"><h2>Ocorrências por região de localização</h2><span class="hint">clique p/ filtrar</span></div>
+      <div class="panel-body"><div class="bars" id="gRegiao"></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Municípios mais atingidos</h2><span class="hint">top 10</span></div>
+      <div class="panel-body"><div class="bars" id="gCidade"></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Nível da ameaça</h2></div>
+      <div class="panel-body"><div class="bars" id="gNivel"></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Difusão por destinatário</h2><span class="hint">órgãos acionados</span></div>
+      <div class="panel-body"><div class="bars" id="gDestino"></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Resultados e providências</h2></div>
+      <div class="panel-body"><div class="bars" id="gResultado"></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Tipificação da ameaça</h2></div>
+      <div class="panel-body"><div class="bars" id="gTipo"></div></div>
+    </div>
+    <div class="panel wide">
+      <div class="panel-head"><h2>Linha do tempo das ocorrências</h2><span class="hint">por dia · empilhado por nível</span></div>
+      <div class="panel-body">
+        <div class="tl" id="gTempo"></div>
+        <div class="legenda" id="tlLegenda"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TABELA -->
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Registros monitorados</h2>
+      <span class="hint" id="contadorFiltro"></span>
+    </div>
+    <div class="tabela-wrap">
+      <table id="tabela">
+        <thead>
+          <tr>
+            <th class="ord" data-col="data">Data</th>
+            <th class="ord" data-col="teor">Postagem</th>
+            <th class="ord" data-col="cidade">Cidade</th>
+            <th class="ord" data-col="identificador">Identificador</th>
+            <th class="ord" data-col="regiao">Região de localização</th>
+            <th class="ord" data-col="nivel">Nível</th>
+            <th class="ord" data-col="difusao">Difusão</th>
+            <th class="ord" data-col="resultado">Resultado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="corpoTabela"></tbody>
+      </table>
+    </div>
+    <div class="rodape-tab">
+      <span id="resumoTabela"></span>
+      <div class="spacer" style="flex:1"></div>
+      <button class="btn" id="btnExportCsv">↓ Exportar CSV</button>
+      <button class="btn" id="btnExportJson">↓ Backup JSON</button>
+      <button class="btn" id="btnImport">↑ Importar CSV/JSON</button>
+      <input type="file" id="arquivoImport" accept=".csv,.json,text/csv,application/json" hidden>
+    </div>
+  </section>
+
+  <p style="font-size:var(--fs-xs);color:var(--muted);margin:0;line-height:1.6">
+    Regiões conforme as 14 Regiões de Planejamento do Estado do Ceará (IPECE). A região é sugerida
+    automaticamente a partir do município e pode ser corrigida manualmente em cada registro.
+    A base é única e fica no servidor do Departamento — o que um agente lança aparece para todos.
+    Acesso restrito a DIP/COIN; toda consulta e toda gravação entram na trilha de auditoria.
+  </p>
+</main>
+
+<!-- MODAL DE REGISTRO -->
+<div class="backdrop" id="modal">
+  <form class="modal" id="formRegistro">
+    <header>
+      <h2 id="modalTitulo">Novo registro</h2>
+      <div style="flex:1"></div>
+      <button type="button" class="btn btn-ghost" id="btnFechar" aria-label="Fechar">✕</button>
+    </header>
+    <div class="corpo">
+      <div class="field full">
+        <label for="cTeor">Postagem — teor / síntese do conteúdo *</label>
+        <textarea id="cTeor" required placeholder="Transcrição ou resumo objetivo do conteúdo publicado"></textarea>
+      </div>
+      <div class="field">
+        <label for="cPlataforma">Plataforma</label>
+        <select id="cPlataforma"></select>
+      </div>
+      <div class="field">
+        <label for="cUrl">Link / URL da postagem</label>
+        <input id="cUrl" type="url" placeholder="https://…" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="cData">Data da captação *</label>
+        <input id="cData" type="date" required>
+      </div>
+      <div class="field">
+        <label for="cCidade">Cidade *</label>
+        <input id="cCidade" list="listaCidades" required placeholder="Município" autocomplete="off">
+        <datalist id="listaCidades"></datalist>
+      </div>
+      <div class="field">
+        <label for="cRegiao">Região de localização *</label>
+        <select id="cRegiao" required></select>
+      </div>
+      <div class="field">
+        <label for="cIdentificador">Identificador *</label>
+        <input id="cIdentificador" required placeholder="@perfil, número, IP, protocolo…" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="cTipoIdent">Natureza do identificador</label>
+        <select id="cTipoIdent"></select>
+      </div>
+      <div class="field">
+        <label for="cTipo">Tipificação da ameaça</label>
+        <select id="cTipo"></select>
+      </div>
+      <div class="field">
+        <label for="cNivel">Nível da ameaça</label>
+        <select id="cNivel"></select>
+      </div>
+      <div class="field">
+        <label for="cAlcance">Alcance estimado da postagem</label>
+        <input id="cAlcance" type="number" min="0" step="1" placeholder="visualizações / compartilhamentos">
+      </div>
+      <div class="field">
+        <label for="cSituacao">Situação da difusão</label>
+        <select id="cSituacao"></select>
+      </div>
+      <div class="field full">
+        <label>Difusão — órgãos destinatários</label>
+        <div class="checks" id="cDestinos"></div>
+      </div>
+      <div class="field">
+        <label for="cResultado">Resultado / providência</label>
+        <select id="cResultado"></select>
+      </div>
+      <div class="field">
+        <label for="cProcedimento">Procedimento / RAI / IP</label>
+        <input id="cProcedimento" placeholder="nº do procedimento" autocomplete="off">
+      </div>
+      <div class="field full">
+        <label for="cObs">Observações do analista</label>
+        <textarea id="cObs" placeholder="Contexto, vínculos, encaminhamentos"></textarea>
+      </div>
+      <div class="field full">
+        <label>Prints da postagem</label>
+        <div class="dropzone" id="zonaPrints" tabindex="0">
+          <input type="file" id="arquivoPrints" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf" multiple hidden>
+          Arraste os prints aqui, cole com <b>Ctrl+V</b> ou
+          <button type="button" class="btn" id="btnEscolherPrints">escolher arquivos</button>
+          <small>PNG, JPEG, WebP, GIF ou PDF · até 12 MB cada · máximo 12 por registro</small>
+        </div>
+        <div class="anexos" id="anexos"></div>
+      </div>
+      <p class="erro full" id="erroForm" hidden></p>
+    </div>
+    <footer>
+      <button type="button" class="btn btn-danger" id="btnExcluir" hidden>Excluir registro</button>
+      <div style="flex:1"></div>
+      <button type="button" class="btn" id="btnCancelar">Cancelar</button>
+      <button type="submit" class="btn btn-primary">Salvar registro</button>
+    </footer>
+  </form>
+</div>
+
+<div class="visor" id="visor" role="dialog" aria-label="Prints da postagem">
+  <div class="visor-topo">
+    <div class="visor-info">
+      <b id="visorNome">—</b>
+      <span id="visorMeta"></span>
+    </div>
+    <div style="flex:1"></div>
+    <span class="visor-contador num" id="visorContador"></span>
+    <a class="btn" id="visorAbrir" target="_blank" rel="noopener noreferrer">Abrir em nova aba ↗</a>
+    <button type="button" class="btn" id="visorFechar" aria-label="Fechar">✕</button>
+  </div>
+  <div class="visor-palco">
+    <button type="button" class="visor-nav" id="visorAnterior" aria-label="Print anterior">‹</button>
+    <div class="visor-quadro" id="visorQuadro"></div>
+    <button type="button" class="visor-nav" id="visorProximo" aria-label="Próximo print">›</button>
+  </div>
+  <div class="visor-tiras" id="visorTiras"></div>
+</div>
+
+<div id="tip"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ═══════════════════════════════════════════════════════════════
+   1. DOMÍNIO — listas controladas
+   ═══════════════════════════════════════════════════════════════ */
+const REGIOES = [
+  "Grande Fortaleza","Litoral Leste","Litoral Norte","Litoral Oeste / Vale do Curu",
+  "Maciço de Baturité","Serra da Ibiapaba","Sertão de Canindé","Sertão Central",
+  "Sertão de Crateús","Sertão de Sobral","Sertão dos Inhamuns","Vale do Jaguaribe",
+  "Centro Sul","Cariri","Não classificada"
+];
+const NIVEIS   = ["Baixo","Médio","Alto","Crítico"];
+const CLASSE_NIVEL = {"Baixo":"baixo","Médio":"medio","Alto":"alto","Crítico":"critico"};
+const COR_NIVEL = {"Baixo":"var(--st-good)","Médio":"var(--st-warn)","Alto":"var(--st-serious)","Crítico":"var(--st-crit)"};
+const SITUACOES = ["Pendente de difusão","Difundido","Em investigação","Concluído"];
+const RESULTADOS = [
+  "Em apuração","Autoria identificada","Autor notificado","Conduzido / oitiva realizada",
+  "Prisão efetuada","Conteúdo removido","Representação ao MP Eleitoral",
+  "Inquérito policial instaurado","Sem elementos — arquivado"
+];
+const RESULTADOS_RESOLVIDOS = new Set([
+  "Autor notificado","Conduzido / oitiva realizada","Prisão efetuada","Conteúdo removido",
+  "Representação ao MP Eleitoral","Inquérito policial instaurado","Sem elementos — arquivado"
+]);
+const DESTINOS = [
+  "TRE-CE","MP Eleitoral","Polícia Federal","DHPP / PC-CE","Ciops","Delegacia Regional",
+  "SSPDS — Gabinete","Justiça Eleitoral","Provedor da plataforma"
+];
+const TIPOS = [
+  "Ameaça a candidato","Ameaça a agente público / autoridade",
+  "Ameaça a mesário ou servidor eleitoral","Ameaça a local de votação",
+  "Coação / aliciamento de eleitores","Convocação para violência",
+  "Desinformação com incitação","Apologia a facção com viés eleitoral",
+  "Ameaça a jornalista / cobertura","Outra"
+];
+const PLATAFORMAS = ["WhatsApp","Telegram","Instagram","Facebook","TikTok","X / Twitter","YouTube","Kwai","Fórum / site","Outra"];
+const TIPOS_IDENT = ["Perfil / usuário","Número de telefone","Grupo / canal","Endereço IP","Nome civil","Protocolo interno","Não identificado"];
+
+/* Sugestão de região a partir do município — Regiões de Planejamento (IPECE).
+   Sempre editável no formulário. */
+const MAPA_CIDADE_REGIAO = {
+  "Fortaleza":"Grande Fortaleza","Caucaia":"Grande Fortaleza","Maracanaú":"Grande Fortaleza",
+  "Maranguape":"Grande Fortaleza","Pacatuba":"Grande Fortaleza","Eusébio":"Grande Fortaleza",
+  "Aquiraz":"Grande Fortaleza","Itaitinga":"Grande Fortaleza","Guaiúba":"Grande Fortaleza",
+  "Horizonte":"Grande Fortaleza","Pacajus":"Grande Fortaleza","Chorozinho":"Grande Fortaleza",
+  "Cascavel":"Grande Fortaleza","Pindoretama":"Grande Fortaleza","São Gonçalo do Amarante":"Grande Fortaleza",
+  "Aracati":"Litoral Leste","Beberibe":"Litoral Leste","Fortim":"Litoral Leste",
+  "Icapuí":"Litoral Leste","Itaiçaba":"Litoral Leste","Jaguaruana":"Litoral Leste",
+  "Acaraú":"Litoral Norte","Itarema":"Litoral Norte","Cruz":"Litoral Norte",
+  "Jijoca de Jericoacoara":"Litoral Norte","Bela Cruz":"Litoral Norte","Marco":"Litoral Norte",
+  "Morrinhos":"Litoral Norte","Amontada":"Litoral Norte","Itapipoca":"Litoral Norte","Miraíma":"Litoral Norte",
+  "Paracuru":"Litoral Oeste / Vale do Curu","Paraipaba":"Litoral Oeste / Vale do Curu",
+  "São Luís do Curu":"Litoral Oeste / Vale do Curu","Pentecoste":"Litoral Oeste / Vale do Curu",
+  "Apuiarés":"Litoral Oeste / Vale do Curu","Tejuçuoca":"Litoral Oeste / Vale do Curu",
+  "Trairi":"Litoral Oeste / Vale do Curu","Itapajé":"Litoral Oeste / Vale do Curu",
+  "Uruburetama":"Litoral Oeste / Vale do Curu","Umirim":"Litoral Oeste / Vale do Curu",
+  "Tururu":"Litoral Oeste / Vale do Curu",
+  "Baturité":"Maciço de Baturité","Guaramiranga":"Maciço de Baturité","Pacoti":"Maciço de Baturité",
+  "Palmácia":"Maciço de Baturité","Redenção":"Maciço de Baturité","Acarape":"Maciço de Baturité",
+  "Aracoiaba":"Maciço de Baturité","Aratuba":"Maciço de Baturité","Barreira":"Maciço de Baturité",
+  "Capistrano":"Maciço de Baturité","Itapiúna":"Maciço de Baturité","Mulungu":"Maciço de Baturité",
+  "Ocara":"Maciço de Baturité",
+  "Tianguá":"Serra da Ibiapaba","Viçosa do Ceará":"Serra da Ibiapaba","Ubajara":"Serra da Ibiapaba",
+  "Ibiapina":"Serra da Ibiapaba","São Benedito":"Serra da Ibiapaba","Guaraciaba do Norte":"Serra da Ibiapaba",
+  "Croatá":"Serra da Ibiapaba","Carnaubal":"Serra da Ibiapaba",
+  "Canindé":"Sertão de Canindé","Caridade":"Sertão de Canindé","Itatira":"Sertão de Canindé",
+  "Paramoti":"Sertão de Canindé","General Sampaio":"Sertão de Canindé",
+  "Quixadá":"Sertão Central","Quixeramobim":"Sertão Central","Senador Pompeu":"Sertão Central",
+  "Banabuiú":"Sertão Central","Ibaretama":"Sertão Central","Choró":"Sertão Central",
+  "Pedra Branca":"Sertão Central","Mombaça":"Sertão Central","Milhã":"Sertão Central",
+  "Solonópole":"Sertão Central","Piquet Carneiro":"Sertão Central","Deputado Irapuan Pinheiro":"Sertão Central",
+  "Crateús":"Sertão de Crateús","Independência":"Sertão de Crateús","Novo Oriente":"Sertão de Crateús",
+  "Ipueiras":"Sertão de Crateús","Ipaporanga":"Sertão de Crateús","Ararendá":"Sertão de Crateús",
+  "Poranga":"Sertão de Crateús","Nova Russas":"Sertão de Crateús","Monsenhor Tabosa":"Sertão de Crateús",
+  "Catunda":"Sertão de Crateús","Tamboril":"Sertão de Crateús","Quiterianópolis":"Sertão de Crateús",
+  "Sobral":"Sertão de Sobral","Meruoca":"Sertão de Sobral","Massapê":"Sertão de Sobral",
+  "Santana do Acaraú":"Sertão de Sobral","Coreaú":"Sertão de Sobral","Moraújo":"Sertão de Sobral",
+  "Senador Sá":"Sertão de Sobral","Uruoca":"Sertão de Sobral","Alcântaras":"Sertão de Sobral",
+  "Cariré":"Sertão de Sobral","Forquilha":"Sertão de Sobral","Groaíras":"Sertão de Sobral",
+  "Graça":"Sertão de Sobral","Pacujá":"Sertão de Sobral","Mucambo":"Sertão de Sobral",
+  "Frecheirinha":"Sertão de Sobral","Reriutaba":"Sertão de Sobral","Varjota":"Sertão de Sobral",
+  "Santa Quitéria":"Sertão de Sobral","Hidrolândia":"Sertão de Sobral","Ipu":"Sertão de Sobral",
+  "Tauá":"Sertão dos Inhamuns","Arneiroz":"Sertão dos Inhamuns","Parambu":"Sertão dos Inhamuns",
+  "Aiuaba":"Sertão dos Inhamuns",
+  "Limoeiro do Norte":"Vale do Jaguaribe","Russas":"Vale do Jaguaribe","Tabuleiro do Norte":"Vale do Jaguaribe",
+  "Morada Nova":"Vale do Jaguaribe","Quixeré":"Vale do Jaguaribe","Jaguaribe":"Vale do Jaguaribe",
+  "Jaguaribara":"Vale do Jaguaribe","Jaguaretama":"Vale do Jaguaribe","Alto Santo":"Vale do Jaguaribe",
+  "Ibicuitinga":"Vale do Jaguaribe","Palhano":"Vale do Jaguaribe","São João do Jaguaribe":"Vale do Jaguaribe",
+  "Pereiro":"Vale do Jaguaribe","Ererê":"Vale do Jaguaribe","Iracema":"Vale do Jaguaribe",
+  "Potiretama":"Vale do Jaguaribe",
+  "Iguatu":"Centro Sul","Icó":"Centro Sul","Acopiara":"Centro Sul","Cariús":"Centro Sul",
+  "Jucás":"Centro Sul","Orós":"Centro Sul","Quixelô":"Centro Sul","Cedro":"Centro Sul",
+  "Várzea Alegre":"Centro Sul","Lavras da Mangabeira":"Centro Sul","Baixio":"Centro Sul",
+  "Ipaumirim":"Centro Sul","Umari":"Centro Sul","Catarina":"Centro Sul","Saboeiro":"Centro Sul",
+  "Juazeiro do Norte":"Cariri","Crato":"Cariri","Barbalha":"Cariri","Missão Velha":"Cariri",
+  "Brejo Santo":"Cariri","Milagres":"Cariri","Mauriti":"Cariri","Jardim":"Cariri",
+  "Porteiras":"Cariri","Abaiara":"Cariri","Penaforte":"Cariri","Jati":"Cariri",
+  "Barro":"Cariri","Aurora":"Cariri","Caririaçu":"Cariri","Farias Brito":"Cariri",
+  "Nova Olinda":"Cariri","Santana do Cariri":"Cariri","Altaneira":"Cariri","Assaré":"Cariri",
+  "Campos Sales":"Cariri","Salitre":"Cariri","Araripe":"Cariri","Potengi":"Cariri",
+  "Antonina do Norte":"Cariri","Tarrafas":"Cariri","Granjeiro":"Cariri"
+};
+const CIDADES = Object.keys(MAPA_CIDADE_REGIAO).sort((a,b)=>a.localeCompare(b,"pt-BR"));
+
+const DATA_PLEITO = "2026-10-04";
+const CHAVE = "sentinela_eleitoral_ce_v1";
+
+function baseDemo(){ return []; }
+
+/* ═══════════════════════════════════════════════════════════════
+   3. ESTADO E PERSISTÊNCIA
+   ═══════════════════════════════════════════════════════════════ */
+let registros = [];
+let ordem = { col:"data", dir:-1 };
+let editandoId = null;
+let anexos = [];                 // prints do registro aberto no formulário
+const filtros = { busca:"", regiao:"", cidade:"", nivel:"", difusao:"", resultado:"", periodo:"" };
+
+/* Base única no servidor do CORDEL. Autenticação é a sessão do próprio
+   CORDEL (cookie cordel_sess) — não há chave separada nem modo local. */
+const modo = "compartilhado";
+const ROTA = "/intel/sentinela";
+let usuario = "";
+let atualizadoEm = null;
+
+const $  = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>Array.from(r.querySelectorAll(s));
+
+async function api(metodo, caminho, corpo){
+  const opcoes = { method:metodo, credentials:"same-origin", headers:{} };
+  if(corpo !== undefined){
+    opcoes.headers["Content-Type"] = "application/json";
+    opcoes.body = JSON.stringify(corpo);
+  }
+  const resp = await fetch(ROTA + caminho, opcoes);
+  if(resp.status === 401){ location.href = "/login"; throw new Error("sessão expirada"); }
+  let dados = null;
+  try{ dados = await resp.json(); }catch(e){}
+  if(!resp.ok) throw new Error((dados && dados.detail) || ("o servidor respondeu " + resp.status));
+  return dados;
+}
+/* Envio de print: multipart, não base64 — o arquivo sobe como veio. */
+async function apiPrint(arquivo){
+  const corpo = new FormData();
+  corpo.append("arquivo", arquivo, arquivo.name || "print");
+  const resp = await fetch(ROTA + "/prints", {method:"POST", credentials:"same-origin", body:corpo});
+  if(resp.status === 401){ location.href = "/login"; throw new Error("sessão expirada"); }
+  let dados = null;
+  try{ dados = await resp.json(); }catch(e){}
+  if(!resp.ok) throw new Error((dados && dados.detail) || ("o servidor respondeu " + resp.status));
+  return dados.print;
+}
+function absorver(resposta){
+  registros = resposta.registros || [];
+  atualizadoEm = resposta.atualizadoEm || null;
+  if(resposta.usuario) usuario = resposta.usuario;
+}
+async function conectar(){
+  const resposta = await api("GET","/registros");
+  absorver(resposta);
+  return resposta;
+}
+async function sincronizar(){
+  if(document.hidden) return;
+  try{
+    const resposta = await api("GET","/registros");
+    const mudou = resposta.atualizadoEm !== atualizadoEm ||
+                  (resposta.registros||[]).length !== registros.length;
+    absorver(resposta);
+    marcarBase("on");
+    if(mudou) render();
+  }catch(e){ marcarBase("off"); }
+}
+function marcarBase(estado){
+  const ponto = $("#pontoBase"), rotulo = $("#rotuloBase");
+  if(!ponto) return;
+  ponto.className = "ponto " + estado;
+  rotulo.textContent = estado === "off" ? "sem conexão com a base"
+                     : (usuario ? usuario : "base do Departamento");
+  $("#chipUsuario").title = "Base única do Departamento de Inteligência" +
+    (atualizadoEm ? " · sincronizada às " + new Date(atualizadoEm).toLocaleTimeString("pt-BR") : "");
+}
+
+function carregarLocal(){ registros = []; }
+function salvar(){ /* a base vive no servidor */ }
+function temDemo(){ return false; }
+function novoId(){
+  let n = 1;
+  const usados = new Set(registros.map(r=>r.id));
+  while(usados.has("REG-"+String(n).padStart(4,"0"))) n++;
+  return "REG-"+String(n).padStart(4,"0");
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   4. UTILIDADES
+   ═══════════════════════════════════════════════════════════════ */
+const esc = s => String(s??"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const semAcento = s => String(s??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+const numero = n => (Number(n)||0).toLocaleString("pt-BR");
+function dataBR(iso){
+  if(!iso) return "—";
+  const [a,m,d] = String(iso).split("-");
+  return d && m && a ? `${d}/${m}/${a}` : iso;
+}
+function diaSemana(iso){
+  if(!iso) return "";
+  const dt = new Date(iso+"T12:00:00");
+  return isNaN(dt) ? "" : dt.toLocaleDateString("pt-BR",{weekday:"short"}).replace(".","");
+}
+function hojeISO(){ const d=new Date(); return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10); }
+function diasEntre(a,b){ return Math.round((new Date(b+"T12:00:00") - new Date(a+"T12:00:00"))/864e5); }
+
+let toastTimer;
+function aviso(msg){
+  const t = $("#toast"); t.textContent = msg; t.classList.add("on");
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove("on"), 3200);
+}
+const tip = $("#tip");
+function mostrarTip(ev, html){
+  tip.innerHTML = html; tip.classList.add("on");
+  const r = tip.getBoundingClientRect();
+  let x = ev.clientX + 14, y = ev.clientY + 16;
+  if(x + r.width  > innerWidth  - 8) x = ev.clientX - r.width - 14;
+  if(y + r.height > innerHeight - 8) y = ev.clientY - r.height - 12;
+  tip.style.left = Math.max(8,x)+"px"; tip.style.top = Math.max(8,y)+"px";
+}
+function esconderTip(){ tip.classList.remove("on"); }
+
+/* ═══════════════════════════════════════════════════════════════
+   5. FILTRAGEM
+   ═══════════════════════════════════════════════════════════════ */
+function filtrados(){
+  const q = semAcento(filtros.busca).trim();
+  const limite = filtros.periodo ? diasEntre("1970-01-01",hojeISO()) - Number(filtros.periodo) : null;
+  return registros.filter(r=>{
+    if(filtros.regiao    && r.regiao    !== filtros.regiao)    return false;
+    if(filtros.cidade    && r.cidade    !== filtros.cidade)    return false;
+    if(filtros.nivel     && r.nivel     !== filtros.nivel)     return false;
+    if(filtros.difusao   && r.situacao  !== filtros.difusao)   return false;
+    if(filtros.resultado && r.resultado !== filtros.resultado) return false;
+    if(limite !== null && diasEntre("1970-01-01", r.data) < limite) return false;
+    if(q){
+      const alvo = semAcento([r.teor,r.cidade,r.identificador,r.regiao,r.tipo,r.resultado,
+        r.plataforma,r.procedimento,r.obs,(r.destinos||[]).join(" ")].join(" "));
+      if(!alvo.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   6. INDICADORES
+   ═══════════════════════════════════════════════════════════════ */
+function renderKpis(lista){
+  const total     = lista.length;
+  const criticos  = lista.filter(r=>r.nivel==="Crítico").length;
+  const altos     = lista.filter(r=>r.nivel==="Alto").length;
+  const cidades   = new Set(lista.map(r=>r.cidade).filter(Boolean)).size;
+  const regioes   = new Set(lista.map(r=>r.regiao).filter(Boolean)).size;
+  const difundidos= lista.filter(r=>(r.destinos||[]).length>0).length;
+  const pendentes = lista.filter(r=>r.situacao==="Pendente de difusão").length;
+  const resolvidos= lista.filter(r=>RESULTADOS_RESOLVIDOS.has(r.resultado)).length;
+  const autoria   = lista.filter(r=>r.resultado && r.resultado!=="Em apuração" && r.resultado!=="Sem elementos — arquivado").length;
+  const alcance   = lista.reduce((s,r)=>s+(Number(r.alcance)||0),0);
+  const pct = (n)=> total ? Math.round(n*100/total)+"%" : "—";
+
+  const tiles = [
+    {cls:"acc",  rot:"Registros no filtro", val:numero(total), nota:`${numero(registros.length)} na base completa`},
+    {cls:"crit", rot:"Ameaças críticas",    val:numero(criticos), nota:`${numero(altos)} de nível alto`},
+    {cls:"",     rot:"Municípios atingidos",val:numero(cidades),  nota:`${numero(regioes)} regiões de planejamento`},
+    {cls:"warn", rot:"Pendentes de difusão",val:numero(pendentes),nota:`${numero(difundidos)} já difundidos (${pct(difundidos)})`},
+    {cls:"ok",   rot:"Providências adotadas",val:numero(resolvidos), nota:`${pct(resolvidos)} dos registros filtrados`},
+    {cls:"",     rot:"Autoria trabalhada",  val:pct(autoria),     nota:`${numero(autoria)} com linha de apuração`},
+    {cls:"",     rot:"Alcance somado",      val:numero(alcance),  nota:"visualizações estimadas"}
+  ];
+  $("#kpis").innerHTML = tiles.map(t=>`
+    <div class="kpi ${t.cls}">
+      <span class="rot">${esc(t.rot)}</span>
+      <span class="val num">${esc(t.val)}</span>
+      <span class="nota">${esc(t.nota)}</span>
+    </div>`).join("");
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   7. GRÁFICOS DE BARRAS
+   ═══════════════════════════════════════════════════════════════ */
+function contar(lista, chave){
+  const m = new Map();
+  lista.forEach(r=>{
+    const vs = Array.isArray(r[chave]) ? r[chave] : [r[chave]];
+    vs.forEach(v=>{ if(v===undefined||v===null||v==="") return; m.set(v,(m.get(v)||0)+1); });
+  });
+  return m;
+}
+function barras(alvo, pares, opcoes={}){
+  const el = $(alvo);
+  if(!pares.length){ el.innerHTML = '<p class="vazio">Sem ocorrências para os filtros aplicados.</p>'; return; }
+  const max = Math.max(...pares.map(p=>p[1]), 1);
+  const totalGeral = pares.reduce((s,p)=>s+p[1],0);
+  el.innerHTML = pares.map(([rot,val])=>{
+    const pc = Math.round(val*1000/max)/10;
+    const share = totalGeral ? Math.round(val*100/totalGeral) : 0;
+    const cls = opcoes.classe ? opcoes.classe(rot) : "";
+    const sel = opcoes.filtro && filtros[opcoes.filtro]===rot ? " sel" : "";
+    return `<button type="button" class="bar-row ${cls}${sel}" data-rot="${esc(rot)}" data-val="${val}" data-share="${share}">
+        <span class="rot" title="${esc(rot)}">${esc(rot)}</span>
+        <span class="track"><span class="fill" style="width:${pc}%"></span></span>
+        <span class="v num">${numero(val)}</span>
+      </button>`;
+  }).join("");
+  $$(".bar-row", el).forEach(b=>{
+    b.addEventListener("mousemove", ev=>mostrarTip(ev,
+      `${esc(b.dataset.rot)}<br><b>${numero(b.dataset.val)}</b> registro(s) · ${b.dataset.share}% do recorte`));
+    b.addEventListener("mouseleave", esconderTip);
+    if(opcoes.filtro){
+      b.addEventListener("click", ()=>{
+        const campo = opcoes.filtro;
+        filtros[campo] = filtros[campo]===b.dataset.rot ? "" : b.dataset.rot;
+        sincronizarControles(); render();
+      });
+    }else{
+      b.style.cursor = "default";
+    }
+  });
+}
+function ordenaDesc(m){ return Array.from(m.entries()).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],"pt-BR")); }
+
+function renderGraficos(lista){
+  const porRegiao = REGIOES.map(r=>[r, lista.filter(x=>x.regiao===r).length]).filter(p=>p[1]>0);
+  barras("#gRegiao", porRegiao.sort((a,b)=>b[1]-a[1]), {filtro:"regiao"});
+
+  barras("#gCidade", ordenaDesc(contar(lista,"cidade")).slice(0,10), {filtro:"cidade"});
+
+  const porNivel = NIVEIS.map(n=>[n, lista.filter(x=>x.nivel===n).length]).filter(p=>p[1]>0).reverse();
+  barras("#gNivel", porNivel, {filtro:"nivel", classe:n=>"n-"+CLASSE_NIVEL[n]});
+
+  barras("#gDestino", ordenaDesc(contar(lista,"destinos")));
+  barras("#gResultado", ordenaDesc(contar(lista,"resultado")), {filtro:"resultado"});
+  barras("#gTipo", ordenaDesc(contar(lista,"tipo")));
+  renderTempo(lista);
+}
+
+function renderTempo(lista){
+  const el = $("#gTempo");
+  const comData = lista.filter(r=>r.data);
+  if(!comData.length){ el.innerHTML = '<p class="vazio" style="width:100%">Sem ocorrências datadas no recorte.</p>'; $("#tlLegenda").innerHTML=""; return; }
+  const datas = comData.map(r=>r.data).sort();
+  let ini = datas[0], fim = datas[datas.length-1];
+  const span = Math.min(diasEntre(ini,fim), 45);
+  ini = new Date(new Date(fim+"T12:00:00").getTime() - span*864e5).toISOString().slice(0,10);
+
+  const dias = [];
+  for(let i=0;i<=span;i++){
+    const d = new Date(new Date(ini+"T12:00:00").getTime() + i*864e5).toISOString().slice(0,10);
+    dias.push(d);
+  }
+  const max = Math.max(...dias.map(d=>comData.filter(r=>r.data===d).length), 1);
+  el.innerHTML = dias.map(d=>{
+    const doDia = comData.filter(r=>r.data===d);
+    const segs = NIVEIS.slice().reverse().map(n=>{
+      const q = doDia.filter(r=>r.nivel===n).length;
+      return q ? `<i style="flex:${q};background:${COR_NIVEL[n]}"></i>` : "";
+    }).join("");
+    const h = Math.round(doDia.length*100/max);
+    const rotulo = dias.length>22 ? (d.slice(8,10)==="01"||d===dias[0]||d===dias[dias.length-1] ? d.slice(8,10)+"/"+d.slice(5,7) : "") : d.slice(8,10)+"/"+d.slice(5,7);
+    return `<div class="tl-col" data-d="${d}" data-q="${doDia.length}">
+        <div class="stack" style="height:${Math.max(h,doDia.length?4:0)}%">${segs}</div>
+        <span class="d">${rotulo}</span>
+      </div>`;
+  }).join("");
+  $$(".tl-col", el).forEach(c=>{
+    c.addEventListener("mousemove", ev=>{
+      const doDia = comData.filter(r=>r.data===c.dataset.d);
+      const det = NIVEIS.slice().reverse().filter(n=>doDia.some(r=>r.nivel===n))
+        .map(n=>`${n}: ${doDia.filter(r=>r.nivel===n).length}`).join("<br>");
+      mostrarTip(ev, `${dataBR(c.dataset.d)} · ${diaSemana(c.dataset.d)}<br><b>${c.dataset.q}</b> ocorrência(s)${det?"<br>"+det:""}`);
+    });
+    c.addEventListener("mouseleave", esconderTip);
+  });
+  $("#tlLegenda").innerHTML = NIVEIS.slice().reverse()
+    .map(n=>`<span><i style="background:${COR_NIVEL[n]}"></i>${n}</span>`).join("");
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   8. TABELA
+   ═══════════════════════════════════════════════════════════════ */
+const PESO_NIVEL = {"Crítico":4,"Alto":3,"Médio":2,"Baixo":1};
+function ordenar(lista){
+  const {col,dir} = ordem;
+  return lista.slice().sort((a,b)=>{
+    let x,y;
+    if(col==="nivel"){ x=PESO_NIVEL[a.nivel]||0; y=PESO_NIVEL[b.nivel]||0; }
+    else if(col==="difusao"){ x=(a.destinos||[]).length; y=(b.destinos||[]).length; }
+    else { x=a[col]??""; y=b[col]??""; }
+    if(typeof x==="number" && typeof y==="number") return (x-y)*dir;
+    return String(x).localeCompare(String(y),"pt-BR")*dir;
+  });
+}
+function pillNivel(n){
+  return `<span class="pill ${CLASSE_NIVEL[n]||"neutro"}"><i></i>${esc(n||"—")}</span>`;
+}
+function celulaDifusao(r){
+  const dest = r.destinos||[];
+  const cls = r.situacao==="Difundido"||r.situacao==="Concluído" ? "acc"
+            : r.situacao==="Em investigação" ? "acc" : "neutro";
+  return `<span class="pill ${cls}"><i></i>${esc(r.situacao||"—")}</span>
+    <span class="dest">${dest.length ? dest.map(d=>`<b>${esc(d)}</b>`).join("") : '<b style="opacity:.6">nenhum órgão acionado</b>'}</span>`;
+}
+function renderTabela(lista){
+  const linhas = ordenar(lista);
+  const corpo = $("#corpoTabela");
+  if(!linhas.length){
+    corpo.innerHTML = `<tr><td colspan="9" class="vazio">Nenhum registro corresponde aos filtros aplicados.</td></tr>`;
+  }else{
+    corpo.innerHTML = linhas.map(r=>`
+      <tr class="n-${CLASSE_NIVEL[r.nivel]||"neutro"}">
+        <td class="data-cel">${dataBR(r.data)}<small>${esc(r.id)}</small></td>
+        <td class="c-post">
+          <div class="teor">${esc(r.teor)}</div>
+          <div class="meta">
+            <span>${esc(r.plataforma||"plataforma não informada")}</span>
+            ${r.tipo?`<span>· ${esc(r.tipo)}</span>`:""}
+            ${Number(r.alcance)>0?`<span>· alcance ${numero(r.alcance)}</span>`:""}
+            ${r.url?`<a href="${esc(r.url)}" target="_blank" rel="noopener noreferrer">abrir link ↗</a>`:""}
+            ${(r.prints||[]).length
+              ? `<button type="button" class="selo-prints" data-prints="${esc(r.id)}">🖼 ${(r.prints||[]).length} print(s)</button>`
+              : ""}
+          </div>
+        </td>
+        <td>${esc(r.cidade)}</td>
+        <td><span class="ident">${esc(r.identificador)}<small>${esc(r.tipoIdent||"")}</small></span></td>
+        <td>${esc(r.regiao)}</td>
+        <td>${pillNivel(r.nivel)}</td>
+        <td>${celulaDifusao(r)}</td>
+        <td>${esc(r.resultado||"—")}${r.procedimento?`<small style="display:block;color:var(--muted);font-size:var(--fs-xs)">${esc(r.procedimento)}</small>`:""}</td>
+        <td><div class="linhas-acoes">
+          <button class="btn btn-ghost" data-editar="${esc(r.id)}" title="Editar">✎</button>
+        </div></td>
+      </tr>`).join("");
+    $$("[data-editar]",corpo).forEach(b=>b.addEventListener("click",()=>abrirModal(b.dataset.editar)));
+    $$("[data-prints]",corpo).forEach(b=>b.addEventListener("click",()=>abrirVisor(b.dataset.prints,0)));
+  }
+  $$("#tabela thead th.ord").forEach(th=>{
+    const ativo = th.dataset.col===ordem.col;
+    th.innerHTML = th.textContent.replace(/[↑↓]\s*$/,"").trim() + (ativo?` <span class="seta">${ordem.dir===1?"↑":"↓"}</span>`:"");
+  });
+  const crit = linhas.filter(r=>r.nivel==="Crítico").length;
+  $("#resumoTabela").textContent = `${linhas.length} registro(s) exibido(s) · ${crit} crítico(s) · base com ${registros.length} no total`;
+  const ativos = Object.entries(filtros).filter(([k,v])=>v).length;
+  $("#contadorFiltro").textContent = ativos ? `${ativos} filtro(s) ativo(s)` : "sem filtros";
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   9. RENDER GERAL
+   ═══════════════════════════════════════════════════════════════ */
+function render(){
+  const lista = filtrados();
+  renderKpis(lista);
+  renderGraficos(lista);
+  renderTabela(lista);
+  atualizarSelectCidades();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   9b. PRINTS — anexo e visualização
+   ═══════════════════════════════════════════════════════════════ */
+const TIPOS_PRINT = ["image/png","image/jpeg","image/webp","image/gif","application/pdf"];
+const MAX_PRINT = 12 * 1024 * 1024;
+const MAX_PRINTS = 12;
+
+function tamanhoLegivel(b){
+  const n = Number(b)||0;
+  if(n < 1024) return n + " B";
+  if(n < 1048576) return (n/1024).toFixed(0) + " KB";
+  return (n/1048576).toFixed(1) + " MB";
+}
+function urlPrint(p){
+  return p.dados ? p.dados : ROTA + "/prints/" + encodeURIComponent(p.id);
+}
+function ehImagem(p){ return p.tipo !== "application/pdf"; }
+
+async function hashArquivo(buffer){
+  try{
+    if(!crypto || !crypto.subtle) return "";
+    const bits = await crypto.subtle.digest("SHA-256", buffer);
+    return Array.from(new Uint8Array(bits)).map(b=>b.toString(16).padStart(2,"0")).join("");
+  }catch(e){ return ""; }
+}
+const paraBase64 = buffer => {
+  const bytes = new Uint8Array(buffer);
+  let bin = "";
+  for(let i=0;i<bytes.length;i+=0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i,i+0x8000));
+  return btoa(bin);
+};
+
+async function anexarArquivos(lista){
+  const arquivos = Array.from(lista||[]);
+  for(const arq of arquivos){
+    if(anexos.length >= MAX_PRINTS){ aviso(`Máximo de ${MAX_PRINTS} prints por registro.`); break; }
+    if(!TIPOS_PRINT.includes(arq.type)){ aviso(`"${arq.name}" não é PNG, JPEG, WebP, GIF ou PDF.`); continue; }
+    if(arq.size > MAX_PRINT){ aviso(`"${arq.name}" passa de 12 MB.`); continue; }
+    const provisorio = { id:"tmp-"+Math.random().toString(36).slice(2), nome:arq.name || "print",
+                         tipo:arq.type, tamanho:arq.size, sha256:"", enviando:true, dados:URL.createObjectURL(arq) };
+    anexos.push(provisorio);
+    renderAnexos();
+    try{
+      const buffer = await arq.arrayBuffer();
+      const sha256 = await hashArquivo(buffer);
+      const enviado = await apiPrint(arq);
+      if(sha256 && enviado.sha256 && sha256 !== enviado.sha256)
+        throw new Error("hash divergente — o arquivo chegou corrompido");
+      Object.assign(provisorio, enviado, {enviando:false, dados:null});
+    }catch(e){
+      anexos = anexos.filter(x=>x!==provisorio);
+      aviso("Falha ao anexar o print: " + e.message);
+    }
+    renderAnexos();
+  }
+}
+/* Prints capturados na base local precisam subir ao servidor antes de o
+   registro ser gravado na base compartilhada. */
+async function subirAnexosPendentes(){ /* os prints já sobem ao serem anexados */ }
+function renderAnexos(){
+  const el = $("#anexos");
+  el.innerHTML = anexos.map((p,i)=>`
+    <div class="anexo${p.enviando?" enviando":""}">
+      ${ehImagem(p) ? `<img class="mini" src="${esc(urlPrint(p))}" alt="${esc(p.nome)}">`
+                    : `<div class="doc">PDF</div>`}
+      <span class="nome" title="${esc(p.nome)}">${esc(p.nome)}</span>
+      <button type="button" class="tirar" data-tirar="${i}" aria-label="Remover">✕</button>
+    </div>`).join("");
+  $$("[data-tirar]", el).forEach(b=>b.addEventListener("click", ()=>{
+    anexos.splice(Number(b.dataset.tirar),1);
+    renderAnexos();
+  }));
+}
+
+/* Visualizador em tela cheia */
+let visorLista = [], visorPos = 0;
+function abrirVisor(registroId, pos){
+  const r = registros.find(x=>x.id===registroId);
+  visorLista = (r && r.prints) || [];
+  if(!visorLista.length) return;
+  visorPos = Math.min(Math.max(Number(pos)||0, 0), visorLista.length-1);
+  $("#visor").classList.add("on");
+  pintarVisor();
+}
+function fecharVisor(){ $("#visor").classList.remove("on"); $("#visorQuadro").innerHTML = ""; }
+function pintarVisor(){
+  const p = visorLista[visorPos];
+  if(!p) return;
+  const url = urlPrint(p);
+  $("#visorQuadro").innerHTML = ehImagem(p)
+    ? `<img src="${esc(url)}" alt="${esc(p.nome)}">`
+    : `<iframe src="${esc(url)}" title="${esc(p.nome)}"></iframe>`;
+  $("#visorNome").textContent = p.nome || "print";
+  $("#visorMeta").textContent = tamanhoLegivel(p.tamanho) + (p.sha256 ? " · SHA-256 " + p.sha256 : "");
+  $("#visorContador").textContent = (visorPos+1) + " de " + visorLista.length;
+  $("#visorAbrir").href = url;
+  $("#visorAnterior").disabled = visorPos === 0;
+  $("#visorProximo").disabled = visorPos === visorLista.length-1;
+  $("#visorTiras").innerHTML = visorLista.map((x,i)=>`
+    <button type="button" data-ir="${i}" class="${i===visorPos?"sel":""}" aria-label="Print ${i+1}">
+      ${ehImagem(x) ? `<img src="${esc(urlPrint(x))}" alt="">` : `<span class="doc">PDF</span>`}
+    </button>`).join("");
+  $$("#visorTiras [data-ir]").forEach(b=>b.addEventListener("click", ()=>{
+    visorPos = Number(b.dataset.ir); pintarVisor();
+  }));
+}
+function moverVisor(passo){
+  const alvo = visorPos + passo;
+  if(alvo < 0 || alvo >= visorLista.length) return;
+  visorPos = alvo; pintarVisor();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   10. CONTROLES E FORMULÁRIO
+   ═══════════════════════════════════════════════════════════════ */
+function preencher(sel, itens, atual){
+  const el = typeof sel === "string" ? $(sel) : sel;
+  const manterPrimeira = el.dataset.filtro === "1";
+  const primeira = manterPrimeira ? el.querySelector("option") : null;
+  el.innerHTML = "";
+  if(primeira) el.appendChild(primeira);
+  itens.forEach(i=>{
+    const o = document.createElement("option");
+    o.value = i; o.textContent = i;
+    if(i===atual) o.selected = true;
+    el.appendChild(o);
+  });
+}
+function atualizarSelectCidades(){
+  const usadas = Array.from(new Set(registros.map(r=>r.cidade).filter(Boolean))).sort((a,b)=>a.localeCompare(b,"pt-BR"));
+  const sel = $("#fCidade"); const atual = filtros.cidade;
+  sel.innerHTML = '<option value="">Todos</option>' + usadas.map(c=>`<option${c===atual?" selected":""}>${esc(c)}</option>`).join("");
+}
+function montarControles(){
+  ["#fRegiao","#fCidade","#fNivel","#fDifusao","#fResultado"].forEach(s=>$(s).dataset.filtro="1");
+  preencher("#fRegiao", REGIOES);
+  preencher("#fNivel", NIVEIS);
+  preencher("#fDifusao", SITUACOES);
+  preencher("#fResultado", RESULTADOS);
+
+  preencher("#cRegiao", REGIOES);
+  preencher("#cNivel", NIVEIS);
+  preencher("#cSituacao", SITUACOES);
+  preencher("#cResultado", RESULTADOS);
+  preencher("#cTipo", TIPOS);
+  preencher("#cPlataforma", PLATAFORMAS);
+  preencher("#cTipoIdent", TIPOS_IDENT);
+  $("#listaCidades").innerHTML = CIDADES.map(c=>`<option value="${esc(c)}">`).join("");
+  $("#cDestinos").innerHTML = DESTINOS.map((d,i)=>
+    `<label><input type="checkbox" value="${esc(d)}" id="dest${i}">${esc(d)}</label>`).join("");
+}
+function sincronizarControles(){
+  $("#fBusca").value = filtros.busca;
+  $("#fRegiao").value = filtros.regiao;
+  $("#fCidade").value = filtros.cidade;
+  $("#fNivel").value = filtros.nivel;
+  $("#fDifusao").value = filtros.difusao;
+  $("#fResultado").value = filtros.resultado;
+  $("#fPeriodo").value = filtros.periodo;
+}
+
+function abrirModal(id){
+  editandoId = id || null;
+  const r = id ? registros.find(x=>x.id===id) : null;
+  $("#modalTitulo").textContent = r ? `Registro ${r.id}` : "Novo registro";
+  $("#btnExcluir").hidden = !r;
+  $("#erroForm").hidden = true;
+  $("#cTeor").value = r?.teor || "";
+  $("#cPlataforma").value = r?.plataforma || PLATAFORMAS[0];
+  $("#cUrl").value = r?.url || "";
+  $("#cData").value = r?.data || hojeISO();
+  $("#cCidade").value = r?.cidade || "";
+  $("#cRegiao").value = r?.regiao || "Não classificada";
+  $("#cIdentificador").value = r?.identificador || "";
+  $("#cTipoIdent").value = r?.tipoIdent || TIPOS_IDENT[0];
+  $("#cTipo").value = r?.tipo || TIPOS[0];
+  $("#cNivel").value = r?.nivel || "Médio";
+  $("#cAlcance").value = (r && Number(r.alcance)) ? r.alcance : "";
+  $("#cSituacao").value = r?.situacao || SITUACOES[0];
+  $("#cResultado").value = r?.resultado || RESULTADOS[0];
+  $("#cProcedimento").value = r?.procedimento || "";
+  $("#cObs").value = r?.obs || "";
+  $$("#cDestinos input").forEach(c=>c.checked = !!r && (r.destinos||[]).includes(c.value));
+  anexos = r && Array.isArray(r.prints) ? r.prints.map(p=>({...p})) : [];
+  renderAnexos();
+  $("#modal").classList.add("on");
+  setTimeout(()=>$("#cTeor").focus(),40);
+}
+function fecharModal(){
+  $("#modal").classList.remove("on");
+  editandoId = null; anexos = []; renderAnexos();
+}
+
+async function salvarFormulario(ev){
+  ev.preventDefault();
+  const cidade = $("#cCidade").value.trim();
+  const dados = {
+    teor: $("#cTeor").value.trim(),
+    plataforma: $("#cPlataforma").value,
+    url: $("#cUrl").value.trim(),
+    data: $("#cData").value,
+    cidade,
+    regiao: $("#cRegiao").value,
+    identificador: $("#cIdentificador").value.trim(),
+    tipoIdent: $("#cTipoIdent").value,
+    tipo: $("#cTipo").value,
+    nivel: $("#cNivel").value,
+    alcance: Number($("#cAlcance").value)||0,
+    destinos: $$("#cDestinos input:checked").map(c=>c.value),
+    situacao: $("#cSituacao").value,
+    resultado: $("#cResultado").value,
+    procedimento: $("#cProcedimento").value.trim(),
+    obs: $("#cObs").value.trim(),
+    prints: anexos.filter(p=>!p.enviando).map(p=>({
+      id:p.id, nome:p.nome, tipo:p.tipo, tamanho:p.tamanho, sha256:p.sha256, em:p.em,
+      ...(p.dados ? {dados:p.dados} : {})
+    }))
+  };
+  const erro = $("#erroForm");
+  if(!dados.teor || !dados.cidade || !dados.identificador || !dados.data){
+    erro.textContent = "Preencha o teor da postagem, a data, a cidade e o identificador.";
+    erro.hidden = false; return;
+  }
+  if(anexos.some(p=>p.enviando)){
+    erro.textContent = "Aguarde o envio dos prints terminar.";
+    erro.hidden = false; return;
+  }
+  if(dados.destinos.length && dados.situacao==="Pendente de difusão") dados.situacao = "Difundido";
+
+  try{
+    const resposta = editandoId
+      ? await api("PUT", "/registros/" + encodeURIComponent(editandoId), dados)
+      : await api("POST", "/registros", dados);
+    absorver(resposta);
+    aviso(editandoId ? "Registro atualizado na base do Departamento."
+                     : "Registro incluído na base do Departamento.");
+  }catch(e){
+    erro.textContent = "Não foi possível gravar: " + e.message;
+    erro.hidden = false; return;
+  }
+  fecharModal(); render();
+}
+async function excluirAtual(){
+  if(!editandoId) return;
+  if(!confirm("Excluir definitivamente este registro da base?")) return;
+  try{
+    absorver(await api("DELETE", "/registros/" + encodeURIComponent(editandoId)));
+  }catch(e){
+    const erro = $("#erroForm");
+    erro.textContent = "Não foi possível excluir: " + e.message;
+    erro.hidden = false; return;
+  }
+  fecharModal(); render(); aviso("Registro excluído.");
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   11. IMPORTAÇÃO E EXPORTAÇÃO
+   ═══════════════════════════════════════════════════════════════ */
+const COLUNAS = [
+  ["id","ID"],["data","Data"],["teor","Postagem"],["plataforma","Plataforma"],["url","URL"],
+  ["cidade","Cidade"],["regiao","Regiao de localizacao"],["identificador","Identificador"],
+  ["tipoIdent","Natureza do identificador"],["tipo","Tipificacao"],["nivel","Nivel"],
+  ["alcance","Alcance"],["destinos","Difusao - destinatarios"],["situacao","Situacao da difusao"],
+  ["resultado","Resultado"],["procedimento","Procedimento"],["obs","Observacoes"],
+  ["prints","Prints"]
+];
+function campoCsv(v){
+  const s = Array.isArray(v)
+    ? v.map(x => (x && typeof x === "object") ? (x.nome || x.id || "") : x).join("; ")
+    : String(v??"");
+  return /[";\n\r]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
+}
+/* Entrega do arquivo: usa a capacidade de download do visualizador quando a
+   página está publicada; fora dele, o caminho clássico via link temporário. */
+async function obterDownloads(){ return null; }
+function baixarLocal(nome, conteudo, mime){
+  const blob = new Blob([conteudo], {type:mime+";charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = nome;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 0);
+}
+async function baixar(nome, texto, mime){
+  const conteudo = "\ufeff" + texto;
+  const ns = await obterDownloads();
+  if(ns){
+    try{ await ns.save({filename:nome, data:conteudo}); return true; }
+    catch(err){
+      const cod = err && err.code;
+      if(cod === "declined"){ aviso("Download cancelado."); return false; }
+      if(cod === "rate_limited"){ aviso("Aguarde alguns segundos e tente novamente."); return false; }
+      if(cod === "too_large"){ aviso("Arquivo grande demais para o visualizador — abra o painel local."); return false; }
+      if(cod === "rejected_extension" || cod === "extension_not_enabled"){
+        try{
+          await ns.save({filename:nome.replace(/\.[^.]+$/,"") + ".txt", data:conteudo});
+          aviso("Salvo como .txt — renomeie a extensão para abrir na planilha.");
+          return true;
+        }catch(e2){ if(e2 && e2.code === "declined"){ aviso("Download cancelado."); return false; } }
+      }
+    }
+  }
+  baixarLocal(nome, conteudo, mime);
+  return true;
+}
+async function exportarCsv(){
+  const lista = ordenar(filtrados());
+  const linhas = [COLUNAS.map(c=>c[1]).join(";")]
+    .concat(lista.map(r=>COLUNAS.map(c=>campoCsv(r[c[0]])).join(";")));
+  if(await baixar(`sentinela-eleitoral-ce_${hojeISO()}.csv`, linhas.join("\r\n"), "text/csv"))
+    aviso(`${lista.length} registro(s) exportado(s) em CSV.`);
+}
+async function exportarJson(){
+  const ok = await baixar(`sentinela-eleitoral-ce_backup_${hojeISO()}.json`,
+    JSON.stringify({versao:1, gerado:new Date().toISOString(), registros}, null, 2), "application/json");
+  if(ok) aviso("Backup JSON gerado.");
+}
+function lerCsv(texto){
+  const linhas = [];
+  let campo = "", linha = [], aspas = false;
+  for(let i=0;i<texto.length;i++){
+    const c = texto[i];
+    if(aspas){
+      if(c === '"'){ if(texto[i+1] === '"'){ campo += '"'; i++; } else aspas = false; }
+      else campo += c;
+    }else if(c === '"'){ aspas = true; }
+    else if(c === ";" || c === ","){ linha.push(campo); campo = ""; }
+    else if(c === "\n"){ linha.push(campo); linhas.push(linha); linha = []; campo = ""; }
+    else if(c !== "\r"){ campo += c; }
+  }
+  if(campo || linha.length){ linha.push(campo); linhas.push(linha); }
+  return linhas.filter(l=>l.some(c=>c.trim()!==""));
+}
+async function importarTexto(texto, nome){
+  let novos = [];
+  try{
+    if(/\.json$/i.test(nome) || texto.trim().startsWith("{") || texto.trim().startsWith("[")){
+      const obj = JSON.parse(texto);
+      novos = Array.isArray(obj) ? obj : (obj.registros||[]);
+    }else{
+      const linhas = lerCsv(texto.replace(/^﻿/,""));
+      if(linhas.length < 2) throw new Error("arquivo sem linhas de dados");
+      const cab = linhas[0].map(h=>semAcento(h).trim());
+      const idx = {};
+      COLUNAS.forEach(([chave,rot])=>{ const p = cab.indexOf(semAcento(rot)); if(p>=0) idx[chave]=p; });
+      novos = linhas.slice(1).map(l=>{
+        const o = {};
+        COLUNAS.forEach(([chave])=>{ if(idx[chave]!==undefined) o[chave] = (l[idx[chave]]||"").trim(); });
+        return o;
+      });
+    }
+  }catch(e){
+    aviso("Arquivo inválido: "+e.message); return;
+  }
+  const limpos = novos.map(o=>normalizar(o)).filter(o=>o.teor || o.identificador || o.cidade);
+  if(!limpos.length){ aviso("Nenhum registro reconhecido no arquivo."); return; }
+  const onde = "a base do Departamento";
+  const semPrints = /\.csv$/i.test(nome) || !limpos.some(r=>(r.prints||[]).length);
+  const substituir = confirm(
+    `${limpos.length} registro(s) lido(s).\n\n` +
+    (semPrints ? "Atenção: planilhas CSV não transportam os prints — use o backup JSON para preservá-los.\n\n" : "") +
+    `OK = substituir todo o conteúdo de ${onde}.\nCancelar = acrescentar aos registros existentes.`);
+  try{
+    absorver(await api("POST","/lote",{registros:limpos, substituir}));
+  }catch(e){ aviso("Falha na importação: "+e.message); return; }
+  render();
+  aviso(`${limpos.length} registro(s) importado(s) em ${onde}.`);
+}
+function normalizar(o){
+  const cidade = String(o.cidade||"").trim();
+  const dest = Array.isArray(o.destinos) ? o.destinos
+    : String(o.destinos||"").split(/[;|]/).map(s=>s.trim()).filter(Boolean);
+  let data = String(o.data||"").trim();
+  const br = data.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if(br) data = `${br[3]}-${br[2]}-${br[1]}`;
+  return {
+    id: String(o.id||"").trim() || novoId(),
+    data: /^\d{4}-\d{2}-\d{2}$/.test(data) ? data : hojeISO(),
+    teor: String(o.teor||"").trim(),
+    plataforma: PLATAFORMAS.includes(o.plataforma) ? o.plataforma : (o.plataforma||"Outra"),
+    url: String(o.url||"").trim(),
+    cidade,
+    regiao: REGIOES.includes(o.regiao) ? o.regiao : (MAPA_CIDADE_REGIAO[cidade] || "Não classificada"),
+    identificador: String(o.identificador||"").trim(),
+    tipoIdent: String(o.tipoIdent||"").trim() || "Perfil / usuário",
+    tipo: String(o.tipo||"").trim() || "Outra",
+    nivel: NIVEIS.includes(o.nivel) ? o.nivel : "Médio",
+    alcance: Number(String(o.alcance||"").replace(/\D/g,""))||0,
+    destinos: dest,
+    situacao: SITUACOES.includes(o.situacao) ? o.situacao : (dest.length ? "Difundido" : "Pendente de difusão"),
+    resultado: String(o.resultado||"").trim() || "Em apuração",
+    procedimento: String(o.procedimento||"").trim(),
+    obs: String(o.obs||"").trim(),
+    prints: Array.isArray(o.prints) ? o.prints : []
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   12. CABEÇALHO — tema, relógio, contagem regressiva
+   ═══════════════════════════════════════════════════════════════ */
+function aplicarTema(t){
+  if(t) document.documentElement.setAttribute("data-theme", t);
+  else document.documentElement.removeAttribute("data-theme");
+  try{ t ? localStorage.setItem(CHAVE+"_tema", t) : localStorage.removeItem(CHAVE+"_tema"); }catch(e){}
+}
+function alternarTema(){
+  const atual = document.documentElement.getAttribute("data-theme");
+  const escuroDoSistema = matchMedia("(prefers-color-scheme: dark)").matches;
+  if(!atual) aplicarTema(escuroDoSistema ? "light" : "dark");
+  else aplicarTema(atual === "dark" ? "light" : "dark");
+}
+function relogio(){
+  const agora = new Date();
+  $("#relogio").textContent = agora.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  $("#dataHoje").textContent = agora.toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"});
+  const faltam = diasEntre(hojeISO(), DATA_PLEITO);
+  $("#pleitoDias").textContent = faltam > 0 ? faltam : (faltam === 0 ? "hoje" : "—");
+  $("#pleito").title = "Primeiro turno: " + dataBR(DATA_PLEITO);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   13. EVENTOS E INICIALIZAÇÃO
+   ═══════════════════════════════════════════════════════════════ */
+function ligarEventos(){
+  let debounce;
+  $("#fBusca").addEventListener("input", e=>{
+    filtros.busca = e.target.value;
+    clearTimeout(debounce); debounce = setTimeout(render, 160);
+  });
+  const mapa = {"#fRegiao":"regiao","#fCidade":"cidade","#fNivel":"nivel",
+                "#fDifusao":"difusao","#fResultado":"resultado","#fPeriodo":"periodo"};
+  Object.entries(mapa).forEach(([sel,campo])=>{
+    $(sel).addEventListener("change", e=>{ filtros[campo] = e.target.value; render(); });
+  });
+  $("#btnLimparFiltros").addEventListener("click", ()=>{
+    Object.keys(filtros).forEach(k=>filtros[k]="");
+    sincronizarControles(); render();
+  });
+  $$("#tabela thead th.ord").forEach(th=>th.addEventListener("click", ()=>{
+    const col = th.dataset.col;
+    ordem = (ordem.col === col) ? {col, dir:ordem.dir*-1} : {col, dir: col==="data" ? -1 : 1};
+    render();
+  }));
+  $("#btnNovo").addEventListener("click", ()=>abrirModal(null));
+  $("#btnFechar").addEventListener("click", fecharModal);
+  $("#btnCancelar").addEventListener("click", fecharModal);
+  $("#btnExcluir").addEventListener("click", excluirAtual);
+  $("#formRegistro").addEventListener("submit", salvarFormulario);
+  $("#modal").addEventListener("mousedown", e=>{ if(e.target.id === "modal") fecharModal(); });
+  document.addEventListener("keydown", e=>{
+    if($("#visor").classList.contains("on")){
+      if(e.key === "Escape"){ fecharVisor(); return; }
+      if(e.key === "ArrowLeft"){ moverVisor(-1); return; }
+      if(e.key === "ArrowRight"){ moverVisor(1); return; }
+    }
+    if(e.key === "Escape" && $("#modal").classList.contains("on")) fecharModal();
+    if(e.key === "/" && document.activeElement === document.body){ e.preventDefault(); $("#fBusca").focus(); }
+  });
+
+  /* Prints: escolher, arrastar, colar */
+  const zona = $("#zonaPrints");
+  $("#btnEscolherPrints").addEventListener("click", ()=>$("#arquivoPrints").click());
+  zona.addEventListener("click", e=>{ if(e.target === zona) $("#arquivoPrints").click(); });
+  zona.addEventListener("keydown", e=>{ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); $("#arquivoPrints").click(); } });
+  $("#arquivoPrints").addEventListener("change", e=>{ anexarArquivos(e.target.files); e.target.value = ""; });
+  ["dragenter","dragover"].forEach(ev=>zona.addEventListener(ev, e=>{
+    e.preventDefault(); zona.classList.add("sobre");
+  }));
+  ["dragleave","drop"].forEach(ev=>zona.addEventListener(ev, e=>{
+    e.preventDefault(); zona.classList.remove("sobre");
+  }));
+  zona.addEventListener("drop", e=>anexarArquivos(e.dataTransfer.files));
+  document.addEventListener("paste", e=>{
+    if(!$("#modal").classList.contains("on")) return;
+    const arquivos = Array.from(e.clipboardData?.items || [])
+      .filter(i=>i.kind === "file").map(i=>i.getAsFile()).filter(Boolean);
+    if(arquivos.length){ e.preventDefault(); anexarArquivos(arquivos); }
+  });
+
+  /* Visualizador de prints */
+  $("#visorFechar").addEventListener("click", fecharVisor);
+  $("#visorAnterior").addEventListener("click", ()=>moverVisor(-1));
+  $("#visorProximo").addEventListener("click", ()=>moverVisor(1));
+  $("#visor").addEventListener("mousedown", e=>{ if(e.target.id === "visor") fecharVisor(); });
+
+  /* Recarga manual da base */
+  $("#chipUsuario").addEventListener("dblclick", sincronizar);
+  $("#cCidade").addEventListener("change", e=>{
+    const sug = MAPA_CIDADE_REGIAO[e.target.value.trim()];
+    if(sug) $("#cRegiao").value = sug;
+  });
+  $("#btnTema").addEventListener("click", alternarTema);
+  $("#btnImprimir").addEventListener("click", ()=>window.print());
+  $("#btnExportCsv").addEventListener("click", exportarCsv);
+  $("#btnExportJson").addEventListener("click", exportarJson);
+  $("#btnImport").addEventListener("click", ()=>$("#arquivoImport").click());
+  $("#arquivoImport").addEventListener("change", e=>{
+    const f = e.target.files[0]; if(!f) return;
+    const leitor = new FileReader();
+    leitor.onload = () => importarTexto(String(leitor.result), f.name);
+    leitor.readAsText(f, "utf-8");
+    e.target.value = "";
+  });
+}
+
+async function iniciarBase(){
+  try{
+    await conectar();
+    marcarBase("on");
+  }catch(e){
+    marcarBase("off");
+    aviso("Não foi possível falar com a base: " + e.message);
+  }
+}
+
+(async function iniciar(){
+  try{ const t = localStorage.getItem(CHAVE+"_tema"); if(t) aplicarTema(t); }catch(e){}
+  montarControles();
+  ligarEventos();
+  sincronizarControles();
+  relogio();
+  setInterval(relogio, 30000);
+  await iniciarBase();
+  render();
+  setInterval(sincronizar, 15000);
+  document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) sincronizar(); });
+})();
+</script>
+</body>
+</html>
